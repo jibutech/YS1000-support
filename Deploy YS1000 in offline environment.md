@@ -109,6 +109,7 @@ velero-58d86bfd96-7qbmf   1/1     Running   0          48s
 # helm list -A
 NAME            NAMESPACE               REVISION        UPDATED                                 STATUS          CHART                   APP VERSION 
 qiming-operator qiming-migration        1               2021-12-22 11:03:12.138661316 +0800 CST deployed        qiming-operator-2.1.0   2.1.0
+```
 
 第七步，安装成功后根据提示获取访问url和token，并登陆YS1000前端
 ```
