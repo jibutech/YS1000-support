@@ -108,11 +108,39 @@ version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec637357037
 
 ## 3. 创建storageclass
 
-第一步，解压helm-v3.7.0-linux-amd64.tar.gz
+第一步，查看当前环境的storageclass
 
 ```
-# 
+# kubectl get storageclass
+NAME              PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+rook-ceph-block   rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   66d
+test-nfs          fuseim.pri/ifs               Delete          Immediate           false                  2m54s
 ```
+
+第二步，复制一份test-nfs的yaml文件，修改name和reclaimPolicy的参数并生成一个新的storageclass
+
+```
+# kubectl get storageclass test-nfs -o yaml > jibu-backup-sc.yaml
+
+# cat jibu-backup-sc.yaml | grep managed-nfs-storage
+  name: managed-nfs-storage
+# cat jibu-backup-sc.yaml | grep Retain
+reclaimPolicy: Retain
+
+# kubectl apply -f ./jibu-backup-sc.yaml
+storageclass.storage.k8s.io/managed-nfs-storage created
+```
+
+第三步，检查storageclass成功创建且参数正确
+
+```
+# kubectl get storageclass
+NAME                  PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+managed-nfs-storage   fuseim.pri/ifs               Retain          Immediate           false                  44s
+rook-ceph-block       rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   66d
+test-nfs              fuseim.pri/ifs               Delete          Immediate           false                  29m
+```
+
 
 ## 4. 部署MinIO
 
