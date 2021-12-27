@@ -1,4 +1,4 @@
-# Deploy MinIO and YS1000 in offline environment
+# Deploy S3 gateway and YS1000 in offline environment
 
 ## 内容索引
 
@@ -7,7 +7,7 @@
     - [1.2 拷贝文档并上传镜像](#12-拷贝文档并上传镜像)
 - [2. 安装Helm](#2-安装Helm)
 - [3. 创建storageclass](#3-创建storageclass)
-- [4. 部署MinIO](#4-部署MinIO)
+- [4. 部署S3 gateway](#4-部署MinIO)
     - [4.1 通过helm安装minio](#41-通过helm安装minio)
     - [4.2 MinIO配置用户和bucket](#42-MinIO配置用户和bucket)
 - [5. 部署YS1000](#5-部署YS1000)
@@ -19,12 +19,12 @@
 
 ### 1.1 检查集群环境与连接
 
-检查以下环境准备
+检查以下环境准备, 使用 `registry.cn-shanghai.aliyuncs.com` 作为私有镜像仓库示例
 
 |Requirment|Example|
 |:--|:--|
-|k8s|v1.15.4|
-|docker|v19.03.8|
+|k8s|>= v1.15|
+|docker| >= v19.03.8|
 |repositry|registry.cn-shanghai.aliyuncs.com|
 
 ```
@@ -41,35 +41,52 @@ Client: Docker Engine - Community
 
 ### 1.2 拷贝文档并上传镜像
 
-第一步，使用scp或u盘传输文档offline-pak到集群所在机器并检查文件。
+第一步，下载软件包并解压至Linux操作环境offline-pak 目录下
 
 ```
 # cd offline-pak/
 # ll
-总用量 384948
--rw-r--r-- 1 root root  13861119 12月 23 11:30 helm-v3.7.0-linux-amd64.tar.gz
--rw-r--r-- 1 root root    307712 12月 15 20:03 minio-9.2.5.tar
--rw------- 1 root root 131659264 12月 23 11:36 minio-client.tar
--rw------- 1 root root 248294912 12月 23 11:34 minio.tar
--rw-r--r-- 1 root root     41688 12月 12 14:37 minio-values.yaml
--rwxrwxrwx 1 root root      2498 12月 23 14:53 setup-image.sh
-drwxr-xr-x 2 root root      4096 12月 23 12:57 ys1000
+总用量 13548
+-rw-r--r-- 1 root root 13861119 12月 23 11:30 helm-v3.7.0-linux-amd64.tar.gz
+drwxr-xr-x 2 root root      211 12月 24 10:35 s3-gateway
+-rwxrwxrwx 1 root root     3294 12月 24 11:28 setup-image.sh
+drwxr-xr-x 2 root root     4096 12月 24 10:36 ys1000
+
+# cd s3-gateway/
+总用量 126M
+-rw-r--r-- 1 root root  41K 12月 12 14:37 minio-values.yaml
+-rw-r--r-- 1 root root 301K 12月 15 20:03 helm-chart-minio-9.2.5.tar
+-rw-r--r-- 1 root root  79M 12月 23 11:34 minio.tar.gz
+-rw-r--r-- 1 root root  47M 12月 23 11:36 minio-client.tar.gz
+-rw-r--r-- 1 root root   40 12月 24 10:29 minio-client.tar.gz.cksum
+-rw-r--r-- 1 root root   33 12月 24 10:34 minio.tar.gz.cksum
+-rw-r--r-- 1 root root   45 12月 24 10:35 helm-chart-minio-9.2.5.tar.cksum
 
 # cd ys1000/
-# ll
-总用量 2590960
--rw------- 1 root root 896296960 12月 23 12:46 hook-runner.tar
--rw------- 1 root root 171201536 12月 23 11:58 mig-controller.tar
--rw------- 1 root root 171201536 12月 23 12:21 mig-discovery.tar
--rw------- 1 root root 603714048 12月 23 12:16 mig-ui.tar
--rw-r--r-- 1 root root     17028 12月 23 12:46 qiming-operator-2.1.0.tgz
--rw------- 1 root root 149760000 12月 23 11:53 qiming-operator.tar
--rw-r--r-- 1 root root      3986 12月 23 12:46 qiming-values.yaml
--rw------- 1 root root 327838208 12月 23 12:55 velero-installer.tar
--rw------- 1 root root  67578368 12月 23 12:57 velero-plugin-for-aws.tar
--rw------- 1 root root  73300480 12月 23 12:00 velero-plugin-for-csi.tar
--rw------- 1 root root  84515328 12月 23 11:49 velero-restic-restore-helper.tar
--rw------- 1 root root 107690496 12月 23 13:00 velero.tar
+# ls -rlth
+总用量 813M
+-rw-r--r-- 1 root root  31M 12月 23 11:49 velero-restic-restore-helper.tar.gz
+-rw-r--r-- 1 root root  54M 12月 23 11:53 qiming-operator.tar.gz
+-rw-r--r-- 1 root root  62M 12月 23 11:58 mig-controller.tar.gz
+-rw-r--r-- 1 root root  29M 12月 23 12:00 velero-plugin-for-csi.tar.gz
+-rw-r--r-- 1 root root 131M 12月 23 12:16 mig-ui.tar.gz
+-rw-r--r-- 1 root root  62M 12月 23 12:21 mig-discovery.tar.gz
+-rw-r--r-- 1 root root 267M 12月 23 12:46 hook-runner.tar.gz
+-rw-r--r-- 1 root root  17K 12月 23 12:46 helm-chart-qiming-operator-2.1.0.tgz
+-rw-r--r-- 1 root root 3.9K 12月 23 12:46 qiming-values.yaml
+-rw-r--r-- 1 root root 114M 12月 23 12:55 velero-installer.tar.gz
+-rw-r--r-- 1 root root  25M 12月 23 12:57 velero-plugin-for-aws.tar.gz
+-rw-r--r-- 1 root root  42M 12月 23 13:00 velero.tar.gz
+-rw-r--r-- 1 root root   40 12月 24 10:36 hook-runner.tar.gz.cksum
+-rw-r--r-- 1 root root   42 12月 24 10:36 mig-controller.tar.gz.cksum
+-rw-r--r-- 1 root root   41 12月 24 10:36 mig-discovery.tar.gz.cksum
+-rw-r--r-- 1 root root   35 12月 24 10:36 mig-ui.tar.gz.cksum
+-rw-r--r-- 1 root root   43 12月 24 10:36 qiming-operator.tar.gz.cksum
+-rw-r--r-- 1 root root   45 12月 24 10:36 velero-installer.tar.gz.cksum
+-rw-r--r-- 1 root root   48 12月 24 10:36 velero-plugin-for-aws.tar.gz.cksum
+-rw-r--r-- 1 root root   49 12月 24 10:36 velero-plugin-for-csi.tar.gz.cksum
+-rw-r--r-- 1 root root   56 12月 24 10:36 velero-restic-restore-helper.tar.gz.cksum
+-rw-r--r-- 1 root root   34 12月 24 10:36 velero.tar.gz.cksum
 ```
 
 第二步，将私有镜像仓库的地址配置完后，跑脚本setup-image.sh，导入MinIO和YS1000的镜像，并修改tag再上传到私有仓库。
@@ -200,6 +217,7 @@ kubectl run --namespace minio minio-1639462625-client \
 ```
 
 第四步，等待两个pod起来后，修改minio的service访问方式为nodeport。
+**注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
 # kubectl get pod -n minio
@@ -255,11 +273,13 @@ http:// < cluster ip > :31901/login
 
 输入用户名：admin，密码：Rx7v4dYVPxPdioxrZCfjjmmY4bxHQYBMkffs1oW6。
 
-第三步，点击左侧导航栏Users，创建一个user，记录access key和secret key（请保存好这对key）, 并选择权限大于等于readwrite。
+第三步，点击左侧导航栏Users，创建一个user，记录access key和secret key, 并选择权限大于等于readwrite。
+**注意**: 用户需要使用额外安全环境保存S3密钥，防止因系统重装等原因造成的密钥丢失
+
 access key：minio
 secret key：minio123
 
-第四步，点击左侧导航栏Buckets，创建一个bucket：test。
+第四步，点击左侧导航栏Buckets，创建一个bucket， 此处以bucket `test` 为例。
 
 
 ## 5. 部署YS1000
@@ -302,6 +322,7 @@ velero:
 ```
 
 第二步，使用helm本地安装YS1000。
+**注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
 # helm install qiming-operator qiming-operator-2.1.0.tgz --namespace qiming-migration --create-namespace -f qiming-values.yaml --set service.type=NodePort --set s3Config.provider=aws --set s3Config.name=minio --set s3Config.accessKey=minio --set s3Config.secretKey=minio123 --set s3Config.bucket=test --set s3Config.s3Url=http://139.198.27.211:31900
