@@ -53,14 +53,16 @@ drwxr-xr-x 2 root root      211 12月 24 10:35 s3-gateway
 drwxr-xr-x 2 root root     4096 12月 24 10:36 ys1000
 
 # cd s3-gateway/
-总用量 126M
--rw-r--r-- 1 root root  41K 12月 12 14:37 minio-values.yaml
--rw-r--r-- 1 root root 301K 12月 15 20:03 helm-chart-minio-9.2.5.tar
--rw-r--r-- 1 root root  79M 12月 23 11:34 minio.tar.gz
--rw-r--r-- 1 root root  47M 12月 23 11:36 minio-client.tar.gz
--rw-r--r-- 1 root root   40 12月 24 10:29 minio-client.tar.gz.cksum
--rw-r--r-- 1 root root   33 12月 24 10:34 minio.tar.gz.cksum
--rw-r--r-- 1 root root   45 12月 24 10:35 helm-chart-minio-9.2.5.tar.cksum
+总用量 158740
+-rw-r--r-- 1 root root 31152424 12月 29 16:32 bitnami-shell.tar.gz
+-rw-r--r-- 1 root root       40 12月 29 16:42 bitnami-shell.tar.gz.cksum
+-rw-r--r-- 1 root root   307712 12月 15 20:03 helm-chart-minio-9.2.5.tar
+-rw-r--r-- 1 root root       45 12月 24 10:35 helm-chart-minio-9.2.5.tar.cksum
+-rw-r--r-- 1 root root 48424155 12月 23 11:36 minio-client.tar.gz
+-rw-r--r-- 1 root root       40 12月 24 10:29 minio-client.tar.gz.cksum
+-rw-r--r-- 1 root root 82595249 12月 23 11:34 minio.tar.gz
+-rw-r--r-- 1 root root       33 12月 24 10:34 minio.tar.gz.cksum
+-rw-r--r-- 1 root root    41688 12月 12 14:37 minio-values.yaml
 
 # cd ys1000/
 # ls -rlth
@@ -175,6 +177,8 @@ test-nfs              fuseim.pri/ifs               Delete          Immediate    
 |clientImage.registry|registry.cn-shanghai.aliyuncs.com|
 |clientImage.repository|ys1000/minio-client|
 |clientImage.tag|2021.12.10|
+|volumePermissions.image.registry|registry.cn-shanghai.aliyuncs.com|
+|volumePermissions.image.repository|ys1000/bitnami-shell|
 |resources.limits.cpu|100m|
 |resources.limits.memory|64Mi|
 
