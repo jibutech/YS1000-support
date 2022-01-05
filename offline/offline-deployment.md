@@ -19,7 +19,8 @@
 
 ### 1.1 检查集群环境与连接
 
-检查以下环境准备, 使用 `registry.cn-shanghai.aliyuncs.com` 作为私有镜像仓库示例
+检查以下环境准备, 假定 `registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test` 作为私有镜像仓库的registry和repository用来存放YS1000软件镜像和测试程序镜像
+用户有权限访问阿里云容器镜像服务，可以通过 `docker pull registry.cn-shanghai.aliyuncs.com/xx/yy:version` 下载公开镜像
 
 |Requirment|Example|
 |:--|:--|
@@ -39,68 +40,24 @@ Client: Docker Engine - Community
 # docker login registry.cn-shanghai.aliyuncs.com
 ```
 
-### 1.2 拷贝文档并上传镜像
+### 1.2 下载并导入镜像
 
-第一步，下载软件包并解压至Linux操作环境offline-pak 目录下
+第一步，使用`git clone` 或者下载当前github 代码仓库 https://github.com/jibutech/YS1000-support
 
-```
-# cd offline-pak/
-# ll
-总用量 13548
--rw-r--r-- 1 root root 13861119 12月 23 11:30 helm-v3.7.0-linux-amd64.tar.gz
-drwxr-xr-x 2 root root      211 12月 24 10:35 s3-gateway
--rwxrwxrwx 1 root root     3294 12月 24 11:28 setup-image.sh
-drwxr-xr-x 2 root root     4096 12月 24 10:36 ys1000
-
-# cd s3-gateway/
-总用量 158740
--rw-r--r-- 1 root root 31152424 12月 29 16:32 bitnami-shell.tar.gz
--rw-r--r-- 1 root root       40 12月 29 16:42 bitnami-shell.tar.gz.cksum
--rw-r--r-- 1 root root   307712 12月 15 20:03 helm-chart-minio-9.2.5.tar
--rw-r--r-- 1 root root       45 12月 24 10:35 helm-chart-minio-9.2.5.tar.cksum
--rw-r--r-- 1 root root 48424155 12月 23 11:36 minio-client.tar.gz
--rw-r--r-- 1 root root       40 12月 24 10:29 minio-client.tar.gz.cksum
--rw-r--r-- 1 root root 82595249 12月 23 11:34 minio.tar.gz
--rw-r--r-- 1 root root       33 12月 24 10:34 minio.tar.gz.cksum
--rw-r--r-- 1 root root    41688 12月 12 14:37 minio-values.yaml
-
-# cd ys1000/
-# ls -rlth
-总用量 813M
--rw-r--r-- 1 root root  31M 12月 23 11:49 velero-restic-restore-helper.tar.gz
--rw-r--r-- 1 root root  54M 12月 23 11:53 qiming-operator.tar.gz
--rw-r--r-- 1 root root  62M 12月 23 11:58 mig-controller.tar.gz
--rw-r--r-- 1 root root  29M 12月 23 12:00 velero-plugin-for-csi.tar.gz
--rw-r--r-- 1 root root 131M 12月 23 12:16 mig-ui.tar.gz
--rw-r--r-- 1 root root  62M 12月 23 12:21 mig-discovery.tar.gz
--rw-r--r-- 1 root root 267M 12月 23 12:46 hook-runner.tar.gz
--rw-r--r-- 1 root root  17K 12月 23 12:46 helm-chart-qiming-operator-2.1.0.tgz
--rw-r--r-- 1 root root 3.9K 12月 23 12:46 qiming-values.yaml
--rw-r--r-- 1 root root 114M 12月 23 12:55 velero-installer.tar.gz
--rw-r--r-- 1 root root  25M 12月 23 12:57 velero-plugin-for-aws.tar.gz
--rw-r--r-- 1 root root  42M 12月 23 13:00 velero.tar.gz
--rw-r--r-- 1 root root   40 12月 24 10:36 hook-runner.tar.gz.cksum
--rw-r--r-- 1 root root   42 12月 24 10:36 mig-controller.tar.gz.cksum
--rw-r--r-- 1 root root   41 12月 24 10:36 mig-discovery.tar.gz.cksum
--rw-r--r-- 1 root root   35 12月 24 10:36 mig-ui.tar.gz.cksum
--rw-r--r-- 1 root root   43 12月 24 10:36 qiming-operator.tar.gz.cksum
--rw-r--r-- 1 root root   45 12月 24 10:36 velero-installer.tar.gz.cksum
--rw-r--r-- 1 root root   48 12月 24 10:36 velero-plugin-for-aws.tar.gz.cksum
--rw-r--r-- 1 root root   49 12月 24 10:36 velero-plugin-for-csi.tar.gz.cksum
--rw-r--r-- 1 root root   56 12月 24 10:36 velero-restic-restore-helper.tar.gz.cksum
--rw-r--r-- 1 root root   34 12月 24 10:36 velero.tar.gz.cksum
-```
-
-第二步，将私有镜像仓库的地址配置完后，跑脚本setup-image.sh，导入MinIO和YS1000的镜像，并修改tag再上传到私有仓库。
+第二步，下载文件至Linux操作环境offline-pak 目录下并执行脚本导入所需镜像
 
 ```
 # cd offline-pak/
-# export REPOSITRY_ID=registry.cn-shanghai.aliyuncs.com/ys1000/
-# ./setup-image.sh 
-Loaded image: bitnami/minio:2021.12.10-debian-10-r0
-801dfff41078: Loading layer [==================================================>]   80.9kB/80.9kB
+# export REPOSITRY_ID=registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/
+# ./prepare-image.sh 
+v2.1.0: Pulling from jibu-ys1000-test/mig-ui
+Digest: sha256:c295b40a336aed2a0e84a05df0092b9174cd57dc3bdde98eaf0c6aa7d676e048
+Status: Image is up to date for registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0
+registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0
+docker pull registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0 done!
+
 ...
-echo IMAGE PUSH SUCCESSFULLY!
+docker push registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/debian:latest done!
 ```
 
 
@@ -172,13 +129,13 @@ test-nfs              fuseim.pri/ifs               Delete          Immediate    
 |:--|:--|
 |global.storageClass|managed-nfs-storage|
 |image.registry|registry.cn-shanghai.aliyuncs.com|
-|image.repository|ys1000/minio|
+|image.repository|jibu-ys1000-test/minio|
 |image.tag|2021.12.10|
 |clientImage.registry|registry.cn-shanghai.aliyuncs.com|
-|clientImage.repository|ys1000/minio-client|
+|clientImage.repository|jibu-ys1000-test/minio-client|
 |clientImage.tag|2021.12.10|
 |volumePermissions.image.registry|registry.cn-shanghai.aliyuncs.com|
-|volumePermissions.image.repository|ys1000/bitnami-shell|
+|volumePermissions.image.repository|jibu-ys1000-test/bitnami-shell|
 |resources.limits.cpu|100m|
 |resources.limits.memory|64Mi|
 
@@ -193,11 +150,11 @@ managed-nfs-storage   fuseim.pri/ifs   Delete          Immediate           false
 
 image:
   registry: registry.cn-shanghai.aliyuncs.com
-  repository: ys1000/minio
+  repository: jibu-ys1000-test/minio
   tag: 2021.12.10
 clientImage:
   registry: registry.cn-shanghai.aliyuncs.com
-  repository: ys1000/minio-client
+  repository: jibu-ys1000-test/minio-client
   tag: 2021.12.10
 ```
 
@@ -291,38 +248,38 @@ secret key：minio123
 第一步，进入/ys1000文件夹，修改qiming-value.yaml 中的值替换成私有镜像仓库的repositry。
 
 ```
-# cd ys1000/
+# cd jibu-ys1000-test/
 
 # cat qiming-values.yaml
 ...
 image:
-  repository: registry.cn-shanghai.aliyuncs.com/ys1000/qiming-operator
+  repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/qiming-operator
   pullPolicy: Always
   tag: "v2.1.0"
 
 componentImages:
   uiImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/mig-ui
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui
     tag: "v2.1.0"
   discoveryImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/mig-discovery
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-discovery
     tag: "v2.1.0"
   migControllerImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/mig-controller
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-controller
     tag: "v2.1.0"
   resticHelperImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/velero-restic-restore-helper
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/velero-restic-restore-helper
     tag: "v1.7.0"
   veleroInstallerImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/velero-installer
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/velero-installer
     tag: "v2.1.0"
   hookRunnerImage:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/hook-runner
+    repository: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/hook-runner
     tag: "latest"
 velero:
   enabled: true
-  image: registry.cn-shanghai.aliyuncs.com/ys1000/velero:v1.7.0
-  plugins: registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-aws:v1.3.0,registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-csi:v0.2.0
+  image: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/velero:v1.7.0
+  plugins: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/velero-plugin-for-aws:v1.3.0,registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/velero-plugin-for-csi:v0.2.0
 ```
 
 第二步，使用helm本地安装YS1000。
