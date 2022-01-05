@@ -1,0 +1,76 @@
+---
+# https://docs.w3cub.com/ansible~2.9/modules/k8s_info_module
+# https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_db_module.html#ansible-collections-community-mysql-mysql-db-module
+- hosts: localhost
+  gather_facts: false
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  tasks:
+    - name: Ensure the wordpress Namespace exists.
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: wordpress
+        state: present
+
+    - name: Search for wordpress mysql
+      community.kubernetes.k8s_info:
+        namespace: wordpress
+        kind: Pod
+        label_selectors:
+          - app = wordpress
+          - tier = mysql
+      register: wordpress_mysql
+    
+    - name: search & define pod name
+      set_fact:
+        pod_name: "{{ wordpress_mysql | json_query('resources[0].metadata.name') }}"
+
+    - name: Display wordpress mysql details
+      debug:
+        msg: "{{ pod_name }}"
+    
+    - fail: msg="can not get mysql pod_name, failed"
+      when: pod_name is undefined
+
+    - name: update siteurl ip addr
+      community.kubernetes.k8s_exec:
+        namespace: wordpress
+        pod: "{{ pod_name }}"
+        command: mysql -u root -ppassw0rd -D wordpress -e "update wp_options set option_value='https://wp-demo.remote-test.jibudata.com:30165' where option_name = 'siteurl'"
+      register: command_status
+      ignore_errors: True
+
+    - name: Check result on updating siteurl ip addr
+      debug:
+        msg: "{{ command_status }}"
+      when: command_status.failed
+
+    - name: update home ip addr
+      community.kubernetes.k8s_exec:
+        namespace: wordpress
+        pod: "{{ pod_name }}"
+        command: mysql -u root -ppassw0rd -D wordpress -e "update wp_options set option_value='https://wp-demo.remote-test.jibudata.com:30165' where option_name = 'home'"
+      register: command_status
+      ignore_errors: True
+
+    - name: Check result on updating home ip addr
+      debug:
+        msg: "{{ command_status }}"
+      when: command_status.failed
+    
+    - name: patch ingress url through ansible
+      k8s:
+        definition:
+          apiVersion: networking.k8s.io/v1beta1
+          kind: Ingress
+          metadata:
+            name: wordpress-ingress
+            namespace: wordpress
+          spec:
+            rules:
+            - host: wp-demo.remote-test.jibudata.com
+    

@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: wordpress
+spec:
+  rules:
+  - host: "wp-demo.remote-test.jibudata.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: wordpress
+          servicePort: 80
