@@ -130,14 +130,20 @@ test-nfs              fuseim.pri/ifs               Delete          Immediate    
 |global.storageClass|managed-nfs-storage|
 |image.registry|registry.cn-shanghai.aliyuncs.com|
 |image.repository|jibu-ys1000-test/minio|
-|image.tag|2021.12.10|
+|image.tag|2021.12.10-debian-10-r0|
 |clientImage.registry|registry.cn-shanghai.aliyuncs.com|
 |clientImage.repository|jibu-ys1000-test/minio-client|
-|clientImage.tag|2021.12.10|
+|clientImage.tag|2021.12.10-debian-10-r1|
 |volumePermissions.image.registry|registry.cn-shanghai.aliyuncs.com|
 |volumePermissions.image.repository|jibu-ys1000-test/bitnami-shell|
-|resources.limits.cpu|100m|
-|resources.limits.memory|64Mi|
+|volumePermissions.image.tag|10-debian-10-r275|
+|resources.limits.cpu|1000m|
+|resources.limits.memory|1024Mi|
+|resources.limits.cpu|500m|
+|resources.limits.memory|512Mi|
+|persistence.enabled|true|
+|persistence.size|200Gi|
+
 
 ```
 # kubectl get storageclasses
@@ -151,11 +157,12 @@ managed-nfs-storage   fuseim.pri/ifs   Delete          Immediate           false
 image:
   registry: registry.cn-shanghai.aliyuncs.com
   repository: jibu-ys1000-test/minio
-  tag: 2021.12.10
+  tag: 2021.12.10-debian-10-r0
 clientImage:
   registry: registry.cn-shanghai.aliyuncs.com
   repository: jibu-ys1000-test/minio-client
-  tag: 2021.12.10
+  tag: 2021.12.10-debian-10-r1
+  ...
 ```
 
 第二步，使用helm本地安装minio。

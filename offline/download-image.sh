@@ -56,8 +56,8 @@ function uploadImages {
       else
           echo "docker push $newImage done!"
       fi
- 
-  done 
+
+  done
 }
 
 function downloadImages {
@@ -85,6 +85,14 @@ function downloadImageFiles {
     for image in "$@"
     do
         echo $image
+        docker pull $image
+        if [ $? -ne 0 ];then
+            echo "failed to docker pull $image "
+            exit 1
+        else
+            echo "docker pull $image done!"
+        fi
+
         imageName=$(echo $image | cut -d/ -f3)
         docker save $image -o ./images/$imageName
         if [ $? -ne 0 ];then
@@ -93,7 +101,7 @@ function downloadImageFiles {
         else
             echo "docker save $image done!"
         fi
-    done   
+    done
 }
 
 function retagImages {
@@ -107,7 +115,7 @@ function retagImages {
         else
             echo "docker tag $image to $newImage done!"
         fi
-    done 
+    done
 }
 
 function pushImages {
@@ -126,7 +134,7 @@ function pushImages {
 
 function exportImages {
     array=("$@")
-    downloadImages "${array[@]}" 
+    downloadImages "${array[@]}"
     retagImages "${array[@]}"
     pushImages "${array[@]}"
 }
@@ -145,7 +153,7 @@ cronjobImages=(registry.cn-shanghai.aliyuncs.com/ys1000/busybox:latest)
 daemonsetImages=(registry.cn-shanghai.aliyuncs.com/ys1000/fluentd:v2.5.2)
 
 
-kafkaImages=(registry.cn-shanghai.aliyuncs.com/ys1000/kafka:2.8.1-debian-10-r57 registry.cn-shanghai.aliyuncs.com/ys1000/kubectl:1.19.16-debian-10-r25 registry.cn-shanghai.aliyuncs.com/ys1000/bitnami-shell:10-debian-10-r260 registry.cn-shanghai.aliyuncs.com/ys1000/kafka-exporter:1.4.2-debian-10-r67 registry.cn-shanghai.aliyuncs.com/ys1000/jmx-exporter:0.16.1-debian-10-r129)
+kafkaImages=(registry.cn-shanghai.aliyuncs.com/ys1000/kafka:2.8.1-debian-10-r57 registry.cn-shanghai.aliyuncs.com/ys1000/kubectl:1.19.16-debian-10-r25 registry.cn-shanghai.aliyuncs.com/ys1000/bitnami-shell:10-debian-10-r260 registry.cn-shanghai.aliyuncs.com/ys1000/kafka-exporter:1.4.2-debian-10-r67 registry.cn-shanghai.aliyuncs.com/ys1000/jmx-exporter:0.16.1-debian-10-r129 registry.cn-shanghai.aliyuncs.com/ys1000/zookeeper:3.7.0-debian-10-r188)
 
 nginxImages=(registry.cn-shanghai.aliyuncs.com/ys1000/nginx:latest registry.cn-shanghai.aliyuncs.com/ys1000/debian:latest)
 
@@ -159,7 +167,7 @@ if [ "$method" == "-d" ];then
   downloadImageFiles "${kafkaImages[@]}"
   downloadImageFiles "${nginxImages[@]}"
 elif [ "$method" == "-u" ];then
-  uploadImages  
+  uploadImages
 else
   exportImages "${ys1000Images[@]}"
   exportImages "${s3gatewayImages[@]}"
