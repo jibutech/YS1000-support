@@ -66,7 +66,7 @@ function exportImages {
     pushImages "${array[@]}"
 }
 
-ys1000Images=(registry.cn-shanghai.aliyuncs.com/ys1000/mig-ui:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/mig-discovery:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/mig-controller:v2.1.0  registry.cn-shanghai.aliyuncs.com/ys1000/velero-restic-restore-helper:v1.7.0  registry.cn-shanghai.aliyuncs.com/ys1000/velero-installer:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/hook-runner:latest registry.cn-shanghai.aliyuncs.com/ys1000/velero:v1.7.0 registry.cn-shanghai.aliyuncs.com/ys1000/qiming-operator:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-aws:v1.3.0 registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-csi:v0.2.0)
+ys1000Images=(registry.cn-shanghai.aliyuncs.com/ys1000/mig-ui:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/mig-discovery:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/mig-controller:v2.1.0  registry.cn-shanghai.aliyuncs.com/ys1000/velero-restic-restore-helper:v1.7.0  registry.cn-shanghai.aliyuncs.com/ys1000/velero-installer:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/hook-runner:latest registry.cn-shanghai.aliyuncs.com/ys1000/velero:v1.7.0 registry.cn-shanghai.aliyuncs.com/ys1000/qiming-operator:v2.1.0 registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-aws:v1.3.0 registry.cn-shanghai.aliyuncs.com/ys1000/velero-plugin-for-csi:v0.2.0 registry.cn-shanghai.aliyuncs.com/jibudata/amberapp:0.0.4)
 
 
 s3gatewayImages=(registry.cn-shanghai.aliyuncs.com/ys1000/bitnami-shell:10-debian-10-r275 registry.cn-shanghai.aliyuncs.com/ys1000/minio-client:2021.12.10-debian-10-r1 registry.cn-shanghai.aliyuncs.com/ys1000/minio:2021.12.10-debian-10-r0)
