@@ -87,10 +87,12 @@ nginxImages=(registry.cn-shanghai.aliyuncs.com/ys1000/nginx:latest registry.cn-s
 exportImages "${ys1000Images[@]}"
 exportImages "${s3gatewayImages[@]}"
 exportImages "${ingressImages[@]}"
-exportImages "${wordpressImages[@]}"
-exportImages "${cronjobImages[@]}"
-exportImages "${daemonsetImages[@]}"
-exportImages "${kafkaImages[@]}"
-exportImages "${nginxImages[@]}"
+
+# disable test apps by default
+#exportImages "${wordpressImages[@]}"
+#exportImages "${cronjobImages[@]}"
+#exportImages "${daemonsetImages[@]}"
+#exportImages "${kafkaImages[@]}"
+#exportImages "${nginxImages[@]}"
 
 
