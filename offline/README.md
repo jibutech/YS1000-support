@@ -19,14 +19,18 @@
 
 ### 1.1 检查集群环境与连接
 
-检查以下环境准备, 假定 `registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test` 作为私有镜像仓库的registry和repository用来存放YS1000软件镜像和测试程序镜像
-用户有权限访问阿里云容器镜像服务，可以通过 `docker pull registry.cn-shanghai.aliyuncs.com/xx/yy:version` 下载公开镜像
+检查以下环境准备:
+- 假定 `registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test` 作为私有镜像仓库用来存放YS1000软件镜像和测试程序镜像
 
-|Requirment|Example|
+- 用户有权限访问阿里云容器镜像服务，可以通过 `docker pull registry.cn-shanghai.aliyuncs.com/xx/yy:version` 下载公开镜像
+
+- 其他环境依赖
+
+|环境|版本|
 |:--|:--|
-|k8s|>= v1.15|
+|Kubernetes| >= v1.17|
 |docker| >= v19.03.8|
-|repositry|registry.cn-shanghai.aliyuncs.com|
+
 
 ```
 # kubectl get nodes
@@ -44,20 +48,32 @@ Client: Docker Engine - Community
 
 第一步，使用`git clone` 或者下载当前github 代码仓库 https://github.com/jibutech/YS1000-support
 
-第二步，下载文件至Linux操作环境offline-pak 目录下并执行脚本导入所需镜像
+第二步，下载镜像文件至Linux操作环境 offline-pak 目录下并执行脚本导入所需镜像
 
-```
-# cd offline-pak/
+**注意**: 本地目录可用空间需要 >= 6GB
+
+```bash
+# cd offline-pak/offline
+
+# ./prepare-image.sh
+invalid paramters
+./prepare-image.sh <-d|-u|-e> <ys1000|app|all>
+  first param:
+    -d: download images to local ./images only
+    -u: update images to new repo configured byenv variable: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test 
+    -e: do both download and then upload to new repo configured byenv variable: registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test 
+  second param:
+    ys1000: only ys1000 images
+    app: only test applications
+    all: both ys1000 and test apps
+
+
 # export REPOSITRY_ID=registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/
-# ./prepare-image.sh 
-v2.1.0: Pulling from jibu-ys1000-test/mig-ui
-Digest: sha256:c295b40a336aed2a0e84a05df0092b9174cd57dc3bdde98eaf0c6aa7d676e048
-Status: Image is up to date for registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0
-registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0
-docker pull registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/mig-ui:v2.1.0 done!
-
+# ./prepare-image.sh -e ys1000 
+do image download & upload to new repo registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test 
+image type: all for both ys1000 and app
+v2.4.1: Pulling from jibudata/qiming-operator
 ...
-docker push registry.cn-shanghai.aliyuncs.com/jibu-ys1000-test/debian:latest done!
 ```
 
 
