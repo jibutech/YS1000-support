@@ -183,7 +183,7 @@ ys1000Images=(
     ${ys1000Repo}/hook-runner:latest
     ${ys1000Repo}/cron:v2.4.1
     ${ys1000Repo}/amberapp:0.0.6
-    ${ys1000Repo}/data-mover:v0.1.6
+    ${ys1000Repo}/data-mover:v0.1.7
     ${ys1000Repo}/velero:v1.7.0-jibu-bca4676
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu 
