@@ -939,9 +939,10 @@ gateway:
   ## ref: https://docs.minio.io/docs/minio-gateway-for-s3
   ##
   type: nas
+  ## NOTE: replicaCount must be 1 for nas to avoid nfs files are not consistent to fail restic init
   ## @param gateway.replicaCount Number of MinIO&reg; Gateway replicas
   ##
-  replicaCount: 2
+  replicaCount: 1
   ## @param gateway.updateStrategy.type Update strategy type for MinIO&reg; Gateway replicas
   updateStrategy:
     type: Recreate
