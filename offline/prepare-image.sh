@@ -174,16 +174,18 @@ function exportImages {
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibudata
 
 ys1000Images=(
-    ${ys1000Repo}/qiming-operator:v2.4.1
-    ${ys1000Repo}/mig-ui:v2.4.1.1
-    ${ys1000Repo}/mig-discovery:v2.4.1
-    ${ys1000Repo}/mig-controller:v2.4.1
+    ${ys1000Repo}/qiming-operator:v2.5.0
+    ${ys1000Repo}/mig-ui:v2.5.0
+    ${ys1000Repo}/mig-discovery:v2.5.0
+    ${ys1000Repo}/mig-controller:v2.5.0
     ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
-    ${ys1000Repo}/velero-installer:v2.4.1
+    ${ys1000Repo}/velero-installer:v2.5.0
     ${ys1000Repo}/hook-runner:latest
-    ${ys1000Repo}/cron:v2.4.1.1
+    ${ys1000Repo}/cron:v2.5.0
+    ${ys1000Repo}/helm-tool:v2.5.0
+    ${ys1000Repo}/self-restore:v2.5.0
     ${ys1000Repo}/amberapp:0.0.6
-    ${ys1000Repo}/data-mover:v1.0.0
+    ${ys1000Repo}/data-mover:v2.5.0
     ${ys1000Repo}/velero:v1.7.0-jibu-bca4676
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu 
