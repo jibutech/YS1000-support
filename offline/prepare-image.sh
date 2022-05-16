@@ -186,10 +186,10 @@ ys1000Images=(
     ${ys1000Repo}/self-restore:v2.5.0
     ${ys1000Repo}/amberapp:0.0.6
     ${ys1000Repo}/data-mover:v2.5.0
-    ${ys1000Repo}/velero:v1.7.0-jibu-bca4676
+    ${ys1000Repo}/velero:v1.7.0-jibu-11dd1ae
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu 
-    ${ys1000Repo}/velero-plugin-ys1000:v0.1.0
+    ${ys1000Repo}/velero-plugin-ys1000:v0.2.0
 )
 
 
