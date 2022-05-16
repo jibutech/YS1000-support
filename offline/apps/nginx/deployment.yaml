@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx-test
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: html
+        emptyDir: {}
+      containers:
+      - name: 1st
+        image: registry.cn-shanghai.aliyuncs.com/ys1000/nginx:latest
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      - name: 2nd
+        image: registry.cn-shanghai.aliyuncs.com/ys1000/debian:latest
+        volumeMounts:
+        - name: html
+          mountPath: /html
+        command: ["/bin/sh", "-c"]
+        args:
+          - while true; do
+              date >> /html/index.html;
+              sleep 10;
+            done

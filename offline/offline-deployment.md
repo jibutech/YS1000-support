@@ -84,6 +84,8 @@ version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec637357037
 
 ## 3. 创建storageclass
 
+注意: 步骤3和步骤4是针对用户环境中不具有AWS S3兼容的对象存储服务来配置，如果已有可用S3服务，请略过。
+
 第一步，查看当前环境的storageclass
 
 ```
@@ -119,6 +121,8 @@ test-nfs              fuseim.pri/ifs               Delete          Immediate    
 
 
 ## 4. 部署MinIO
+
+注意: 步骤3和步骤4是针对用户环境中不具有AWS S3兼容的对象存储服务来配置，如果已有可用S3服务，请略过。
 
 本文中我们将使用已经打包好的helm文件和docker image通过替换minio-values.yaml的参数实现私有化部署。
 
