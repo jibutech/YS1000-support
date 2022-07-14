@@ -65,6 +65,8 @@ helm install "restore-$RANDOM_SUFFIX" "${CHART}" \
 set +x
 
 echo "Restore completed, removing temp resources"
+kubectl -n "restore-$RANDOM_SUFFIX" delete migclusters.migration.yinhestor.com host-cluster --ignore-not-found=true --wait=false
+kubectl patch migclusters.migration.yinhestor.com/host-cluster -p '{"metadata":{"finalizers": []}}' --type=merge -n "restore-$RANDOM_SUFFIX" 2> /dev/null
 helm delete "restore-$RANDOM_SUFFIX" --namespace "restore-$RANDOM_SUFFIX"
 kubectl delete ns "restore-$RANDOM_SUFFIX" "restore-agent-$RANDOM_SUFFIX"
 
