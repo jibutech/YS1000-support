@@ -1307,6 +1307,10 @@ zookeeper:
   ## @param zookeeper.enabled Switch to enable or disable the Zookeeper helm chart
   ##
   enabled: true
+  image:
+    registry: registry.cn-shanghai.aliyuncs.com
+    repository: ys1000/zookeeper
+    tag: 3.8.0-debian-11-r11
   auth:
     ## @param zookeeper.auth.enabled Enable Zookeeper auth
     ##
