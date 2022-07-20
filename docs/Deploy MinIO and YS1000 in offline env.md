@@ -41,62 +41,31 @@ Client: Docker Engine - Community
 
 ### 1.2 拷贝文档并上传镜像
 
-第一步，下载软件包并解压至Linux操作环境offline-pak 目录下
+第一步，下载软件包并解压至Linux操作环境YS1000-support-main/offline 目录下
 
 ```
-# cd offline-pak/
+# cd YS1000-support-main/offline/
 # ll
 总用量 13548
 -rw-r--r-- 1 root root 13861119 12月 23 11:30 helm-v3.7.0-linux-amd64.tar.gz
 drwxr-xr-x 2 root root      211 12月 24 10:35 s3-gateway
--rwxrwxrwx 1 root root     3294 12月 24 11:28 setup-image.sh
+-rwxrwxrwx 1 root root     3294 12月 24 11:28 prepare-image.sh
 drwxr-xr-x 2 root root     4096 12月 24 10:36 ys1000
 
-# cd s3-gateway/
-总用量 158740
--rw-r--r-- 1 root root 31152424 12月 29 16:32 bitnami-shell.tar.gz
--rw-r--r-- 1 root root       40 12月 29 16:42 bitnami-shell.tar.gz.cksum
--rw-r--r-- 1 root root   307712 12月 15 20:03 helm-chart-minio-9.2.5.tar
--rw-r--r-- 1 root root       45 12月 24 10:35 helm-chart-minio-9.2.5.tar.cksum
--rw-r--r-- 1 root root 48424155 12月 23 11:36 minio-client.tar.gz
--rw-r--r-- 1 root root       40 12月 24 10:29 minio-client.tar.gz.cksum
--rw-r--r-- 1 root root 82595249 12月 23 11:34 minio.tar.gz
--rw-r--r-- 1 root root       33 12月 24 10:34 minio.tar.gz.cksum
--rw-r--r-- 1 root root    41688 12月 12 14:37 minio-values.yaml
+# ls images/
+amberapp:0.0.6                   ingress-nginx-controller:v0.40.2  minio-client:2021.12.10-debian-10-r1       velero-plugin-ys1000:v0.3.0
+bitnami-shell:10-debian-10-r275  kube-webhook-certgen:v1.3.0       qiming-operator:v2.6.0                     velero-restic-restore-helper:v1.7.0
+cron:v2.6.0                      mig-controller:v2.6.2             self-restore:v2.6.0                        velero:v1.7.0-jibu-2280867-202206231040
+data-mover:v2.6.0                mig-discovery:v2.6.0              velero-installer:v2.6.1
+helm-tool:v2.6.0                 mig-ui:v2.6.3                     velero-plugin-for-aws:v1.3.0
+hook-runner:latest               minio:2021.12.10-debian-10-r0     velero-plugin-for-csi:v0.2.0-jibu-39ad34c
 
-# cd ys1000/
-# ls -rlth
-总用量 813M
--rw-r--r-- 1 root root  31M 12月 23 11:49 velero-restic-restore-helper.tar.gz
--rw-r--r-- 1 root root  54M 12月 23 11:53 qiming-operator.tar.gz
--rw-r--r-- 1 root root  62M 12月 23 11:58 mig-controller.tar.gz
--rw-r--r-- 1 root root  29M 12月 23 12:00 velero-plugin-for-csi.tar.gz
--rw-r--r-- 1 root root 131M 12月 23 12:16 mig-ui.tar.gz
--rw-r--r-- 1 root root  62M 12月 23 12:21 mig-discovery.tar.gz
--rw-r--r-- 1 root root 267M 12月 23 12:46 hook-runner.tar.gz
--rw-r--r-- 1 root root  17K 12月 23 12:46 helm-chart-qiming-operator-2.1.0.tgz
--rw-r--r-- 1 root root 3.9K 12月 23 12:46 qiming-values.yaml
--rw-r--r-- 1 root root 114M 12月 23 12:55 velero-installer.tar.gz
--rw-r--r-- 1 root root  25M 12月 23 12:57 velero-plugin-for-aws.tar.gz
--rw-r--r-- 1 root root  42M 12月 23 13:00 velero.tar.gz
--rw-r--r-- 1 root root   40 12月 24 10:36 hook-runner.tar.gz.cksum
--rw-r--r-- 1 root root   42 12月 24 10:36 mig-controller.tar.gz.cksum
--rw-r--r-- 1 root root   41 12月 24 10:36 mig-discovery.tar.gz.cksum
--rw-r--r-- 1 root root   35 12月 24 10:36 mig-ui.tar.gz.cksum
--rw-r--r-- 1 root root   43 12月 24 10:36 qiming-operator.tar.gz.cksum
--rw-r--r-- 1 root root   45 12月 24 10:36 velero-installer.tar.gz.cksum
--rw-r--r-- 1 root root   48 12月 24 10:36 velero-plugin-for-aws.tar.gz.cksum
--rw-r--r-- 1 root root   49 12月 24 10:36 velero-plugin-for-csi.tar.gz.cksum
--rw-r--r-- 1 root root   56 12月 24 10:36 velero-restic-restore-helper.tar.gz.cksum
--rw-r--r-- 1 root root   34 12月 24 10:36 velero.tar.gz.cksum
-```
 
 第二步，将私有镜像仓库的地址配置完后，跑脚本setup-image.sh，导入MinIO和YS1000的镜像，并修改tag再上传到私有仓库。
 
 ```
-# cd offline-pak/
 # export REPOSITRY_ID=registry.cn-shanghai.aliyuncs.com/ys1000/
-# ./setup-image.sh 
+# ./prepare-image.sh -u ys1000 
 Loaded image: bitnami/minio:2021.12.10-debian-10-r0
 801dfff41078: Loading layer [==================================================>]   80.9kB/80.9kB
 ...
