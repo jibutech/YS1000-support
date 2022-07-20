@@ -59,7 +59,7 @@ cron:v2.6.0                      mig-controller:v2.6.2             self-restore:
 data-mover:v2.6.0                mig-discovery:v2.6.0              velero-installer:v2.6.1
 helm-tool:v2.6.0                 mig-ui:v2.6.3                     velero-plugin-for-aws:v1.3.0
 hook-runner:latest               minio:2021.12.10-debian-10-r0     velero-plugin-for-csi:v0.2.0-jibu-39ad34c
-
+```
 
 第二步，将私有镜像仓库的地址配置完后，跑脚本setup-image.sh，导入MinIO和YS1000的镜像，并修改tag再上传到私有仓库。
 
