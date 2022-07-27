@@ -392,7 +392,8 @@ velero:
 ```
 # S3 参数示例
 # http://139.198.27.211:31900 为上面minio配置的S3 服务端口对应的IP地址和对外node port端口 
-# minio 和 minio123 为上述minio 配置的accessKey 和 secretKey
+# minio 和 minio123 分别为上述minio配置的accessKey和secretKey
+# test 是上述minio配置的S3 bucket名称
 #
 [root@ys1000-demo2 ys1000]# helm install ./qiming-operator-2.7.0.tgz --namespace qiming-migration --create-namespace --generate-name -f qiming-values.yaml --set service.type=NodePort --set s3Config.accessKey=minio --set s3Config.secretKey=minio123 --set s3Config.bucket=test --set s3Config.s3Url=http://139.198.27.211:31900
 ```
