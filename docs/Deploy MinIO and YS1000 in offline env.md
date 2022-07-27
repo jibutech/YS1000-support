@@ -381,8 +381,8 @@ migconfig:
 velero:
   enabled: true
   namespace: qiming-backend
-  image: registry.cn-shanghai.aliyuncs.com/jibudata/velero:v1.7.0-jibu-39a9e6f-202207011049
-  plugins: registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-for-aws:v1.3.0,registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-for-csi:v0.2.0-jibu-2801dcd,registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-ys1000:v0.4.0
+  image: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero:v1.7.0-jibu-39a9e6f-202207011049
+  plugins: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-aws:v1.3.0,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-csi:v0.2.0-jibu-2801dcd,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-ys1000:v0.4.0
 ...
 ```
 
