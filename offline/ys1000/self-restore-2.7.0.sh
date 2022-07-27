@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 #
-# Copyright (C) 2021 Jibu Tech - All Rights Reserved
+# Copyright (C) 2022 Jibu Tech - All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited
 # Proprietary and confidential
 #
@@ -51,12 +51,15 @@ echo "Pulling chart from s3"
 helmtool pull --access-key "${S3_AK}" --secret-key "${S3_SK}" \
     --region "${S3_REGION}" --bucket "${S3_BUCKET}" \
     --url "${S3_URL}" --insecure="${S3_INSECURE}" \
-    -d /tmp/"${RANDOM_SUFFIX}"
+    -d /tmp/"${RANDOM_SUFFIX}" --untar
 
-CHART=$(find /tmp/"${RANDOM_SUFFIX}" -name 'qiming-operator-*' -print)
+CHART=/tmp/"${RANDOM_SUFFIX}"/qiming-operator
 
 echo "Start restoring"
 set -x
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm repo update bitnami
+# helm dependency build "${CHART}"
 helm install "restore-$RANDOM_SUFFIX" "${CHART}" \
     --namespace "restore-$RANDOM_SUFFIX" --create-namespace --timeout 20m \
     --set restore=true,velero.namespace="restore-agent-$RANDOM_SUFFIX" \
@@ -65,9 +68,11 @@ helm install "restore-$RANDOM_SUFFIX" "${CHART}" \
 set +x
 
 echo "Restore completed, removing temp resources"
+set -x
 kubectl -n "restore-$RANDOM_SUFFIX" delete migclusters.migration.yinhestor.com host-cluster --ignore-not-found=true --wait=false
 kubectl patch migclusters.migration.yinhestor.com/host-cluster -p '{"metadata":{"finalizers": []}}' --type=merge -n "restore-$RANDOM_SUFFIX" 2> /dev/null
 helm delete "restore-$RANDOM_SUFFIX" --namespace "restore-$RANDOM_SUFFIX"
 kubectl delete ns "restore-$RANDOM_SUFFIX" "restore-agent-$RANDOM_SUFFIX"
+set +x
 
 echo "Done"

@@ -23,7 +23,7 @@
 
 |Requirment|Example|
 |:--|:--|
-|k8s|>= v1.15|
+|k8s|>= v1.15 <= v1.21|
 |docker| >= v19.03.8|
 |swr.cn-east-3.myhuaweicloud.com|私有镜像地址|
 
@@ -47,12 +47,13 @@ Login Succeeded
 ### 1.2 拷贝应用镜像和文档并上传至私有镜像仓库
 
 第一步，下载软件包并解压至Linux操作环境YS1000-support-main/offline 目录下
+**注意**: 解压后的容器镜像文件大小约6GB，请先确保当前运行环境和私有镜像仓库有足够空间
 
 ```
-[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.6.3/images.tar.gz
-[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.6.3/YS1000-support-v2.6.3.zip
+[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.7.0/images.tar.gz
+[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.7.0/YS1000-support-v2.7.0.zip
 [root@ys1000-demo2 ~]# tar -xvzf images.tar.gz
-[root@ys1000-demo2 ~]# unzip YS1000-support-v2.6.3.zip 
+[root@ys1000-demo2 ~]# unzip YS1000-support-v2.7.0.zip 
 
 [root@ys1000-demo2 ~]# cd YS1000-support-main/offline/
 # ll
@@ -65,12 +66,32 @@ drwxr-xr-x 2 root root     4096 12月 24 10:36 ys1000
 
 [root@ys1000-demo2 offline]# mv ../../images .
 # ls images/
-amberapp:0.0.6                   ingress-nginx-controller:v0.40.2  minio-client:2021.12.10-debian-10-r1       velero-plugin-ys1000:v0.3.0
-bitnami-shell:10-debian-10-r275  kube-webhook-certgen:v1.3.0       qiming-operator:v2.6.0                     velero-restic-restore-helper:v1.7.0
-cron:v2.6.0                      mig-controller:v2.6.2             self-restore:v2.6.0                        velero:v1.7.0-jibu-2280867-202206231040
-data-mover:v2.6.0                mig-discovery:v2.6.0              velero-installer:v2.6.1
-helm-tool:v2.6.0                 mig-ui:v2.6.3                     velero-plugin-for-aws:v1.3.0
-hook-runner:latest               minio:2021.12.10-debian-10-r0     velero-plugin-for-csi:v0.2.0-jibu-39ad34c
+total 5.2G
+-rw------- 1 root root  79M Jul 27 09:51 webserver:v2.7.0
+-rw------- 1 root root 185M Jul 27 09:51 velero:v1.7.0-jibu-39a9e6f-202207011049
+-rw------- 1 root root 120M Jul 27 09:50 velero-restic-restore-helper:v1.7.0
+-rw------- 1 root root 106M Jul 27 09:51 velero-plugin-ys1000:v0.4.0
+-rw------- 1 root root 116M Jul 27 09:51 velero-plugin-for-csi:v0.2.0-jibu-2801dcd
+-rw------- 1 root root  65M Jul 27 09:51 velero-plugin-for-aws:v1.3.0
+-rw------- 1 root root 488M Jul 27 09:50 velero-installer:v2.7.0
+-rw------- 1 root root  60M Jul 27 09:51 self-restore:v2.7.0
+-rw------- 1 root root 189M Jul 27 09:51 restic-dm:v2.7.0
+-rw------- 1 root root 175M Jul 27 09:48 qiming-operator:v2.7.0
+-rw------- 1 root root 387M Jul 27 09:52 mysql:8.0.29-debian-10-r23
+-rw------- 1 root root 126M Jul 27 09:52 minio-client:2021.12.10-debian-10-r1
+-rw------- 1 root root 237M Jul 27 09:52 minio:2021.12.10-debian-10-r0
+-rw------- 1 root root 632M Jul 27 09:49 mig-ui:v2.7.0
+-rw------- 1 root root 180M Jul 27 09:49 mig-discovery:v2.7.0
+-rw------- 1 root root 193M Jul 27 09:49 mig-controller:v2.7.0
+-rw------- 1 root root  54M Jul 27 09:52 kube-webhook-certgen:v1.3.0
+-rw------- 1 root root 276M Jul 27 09:52 ingress-nginx-controller:v0.40.2
+-rw------- 1 root root 855M Jul 27 09:50 hook-runner:latest
+-rw------- 1 root root  59M Jul 27 09:51 helm-tool:v2.7.0
+-rw------- 1 root root 174M Jul 27 09:51 dm-agent:v2.7.0
+-rw------- 1 root root 165M Jul 27 09:51 data-mover:v2.7.0
+-rw------- 1 root root 177M Jul 27 09:51 cron:v2.7.0
+-rw------- 1 root root  80M Jul 27 09:52 bitnami-shell:10-debian-10-r275
+-rw------- 1 root root 149M Jul 27 09:51 amberapp:0.0.6
 ```
 
 第二步，将私有镜像仓库的地址配置完后，通过运行脚本prepare-image.sh，导入MinIO和YS1000的镜像，并修改tag再上传到私有仓库。
@@ -109,7 +130,11 @@ linux-amd64/README.md
 version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec6373570374ce770b", GitTreeState:"clean", GoVersion:"go1.16.8"}
 ```
 
-## 3. 创建storageclass
+## 3. 部署MinIO
+**注意**: 推荐在生产环境中使用外部企业级对象存储服务，如果环境中具备此条件，可以跳过第四步 MinIO 相关配置，基于外置对象服务，创建备份需要的S3 bucket
+本文中我们将使用已经打包好的helm chart和docker image通过替换minio-values.yaml的参数实现私有化部署。
+
+### 3.1 创建storageclass
 
 第一步，查看当前环境的storageclass
 
@@ -143,12 +168,7 @@ managed-nfs-storage   fuseim.pri/ifs               Retain          Immediate    
 rook-ceph-block       rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   66d
 test-nfs              fuseim.pri/ifs               Delete          Immediate           false                  29m
 ```
-
-## 4. 部署MinIO
-
-本文中我们将使用已经打包好的helm chart和docker image通过替换minio-values.yaml的参数实现私有化部署。
-
-### 4.1 通过helm安装minio
+### 3.2 通过helm安装minio
 
 第一步，修改minio-value.yaml 中的值，替换成上一步新建的storageclass和私有镜像仓库的地址，其他参数如resources等根据需求替换（此处为默认值）。
 |Key|Value|
@@ -251,7 +271,7 @@ NAME    TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                        
 minio   NodePort   10.98.207.210   <none>        9000:31900/TCP,9001:31901/TCP   42h
 ```
 
-### 4.2 MinIO配置用户和bucket
+### 3.3 MinIO配置用户和bucket
 
 第一步，使用上述命令环境变量中的的用户名和密码 `echo $ROOT_USER; echo $ROOT_PASSWORD`，前端登陆minio。
 ```
@@ -275,7 +295,7 @@ secret key：minio123
 第四步，点击左侧导航栏Buckets，创建一个bucket， 此处以bucket `test` 为例。
 
 
-## 5. 部署YS1000
+## 4. 部署YS1000
 
 第一步，进入`./ys1000`文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
 
@@ -288,36 +308,45 @@ secret key：minio123
 image:
   repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/qiming-operator
   pullPolicy: Always
-  tag: "v2.6.0"
+  tag: "v2.7.0"
+...
+imageBase:
+  registry: registry.cn-shanghai.aliyuncs.com/jibudata
+  pullPolicy: Always
+  tag: "v2.7.0"
 ...
 componentImages:
   uiImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-ui
-    tag: "v2.6.3"
+    tag: "v2.7.0"
   discoveryImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-discovery
-    tag: "v2.6.0"
+    tag: "v2.7.0"
   migControllerImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-controller
-    tag: "v2.6.2"
+    tag: "v2.7.0"
   resticHelperImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-restic-restore-helper
     tag: "v1.7.0"
   veleroInstallerImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-installer
-    tag: "v2.6.1"
+    tag: "v2.7.0"
   hookRunnerImage:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/hook-runner
     tag: "latest"
   cron:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/cron
-    tag: "v2.6.0"
+    tag: "v2.7.0"
   helmTool:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/helm-tool
-    tag: "v2.6.0"
+    tag: "v2.7.0"
   selfRestore:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/self-restore
-    tag: "v2.6.0"
+    tag: "v2.7.0"
+  webServer:
+    repository: registry.cn-shanghai.aliyuncs.com/jibudata/webserver
+    tag: "v2.7.0"
+...
 migconfig:
   ...
   amberappRegistry: "swr.cn-east-3.myhuaweicloud.com"
@@ -328,45 +357,53 @@ migconfig:
 
   datamoverRegistry: "swr.cn-east-3.myhuaweicloud.com"
   datamoverRepo: "jibu-dev/data-mover"
-  datamoverTag: "v2.6.0"
+  datamoverTag: "v2.7.0"
   datamoverEnabled: true
   datamoverClusters: "all"
 ...
 velero:
   enabled: true
-  image: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero:v1.7.0
-  plugins: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-aws:v1.3.0,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-csi:v0.2.0-jibu-39ad34c,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-ys1000:v0.3.0
+  namespace: qiming-backend
+  image: registry.cn-shanghai.aliyuncs.com/jibudata/velero:v1.7.0-jibu-39a9e6f-202207011049
+  plugins: registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-for-aws:v1.3.0,registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-for-csi:v0.2.0-jibu-2801dcd,registry.cn-shanghai.aliyuncs.com/jibudata/velero-plugin-ys1000:v0.4.0
+...
 ```
 
 第二步，使用helm本地安装YS1000。
 **注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
-# http://139.198.27.211:31900 为上面minio配置的S3 服务端口对应的IP地址和对外node port端口
+# S3 参数示例
+# http://139.198.27.211:31900 为上面minio配置的S3 服务端口对应的IP地址和对外node port端口 
 # minio 和 minio123 为上述minio 配置的accessKey 和 secretKey
-[root@ys1000-demo2 ys1000]# helm install ./qiming-operator-2.6.3.tgz --namespace qiming-migration --create-namespace -f qiming-values.yaml --set service.type=NodePort --set s3Config.accessKey=minio --set s3Config.secretKey=minio123 --set s3Config.bucket=test --set s3Config.s3Url=http://139.198.27.211:31900
+#
+[root@ys1000-demo2 ys1000]# helm install ./qiming-operator-2.7.0.tgz --namespace qiming-migration --create-namespace -f qiming-values.yaml --set service.type=NodePort --set s3Config.accessKey=minio --set s3Config.secretKey=minio123 --set s3Config.bucket=test --set s3Config.s3Url=http://139.198.27.211:31900
 ```
 
 第三步，查看qiming-operator版本和pod运行情况，等待pod就绪
 
 ```
 # kubectl -n qiming-migration get pods
-NAME                                                READY   STATUS    RESTARTS   AGE
-mig-controller-default-5b4f996675-m86hw             1/1     Running   0          22s
-qiming-operator-77c4cb9f76-jd2tq                    1/1     Running   0          35s
-qiming-operator-velero-installer-6867d55f7d-przjh   1/1     Running   0          35s
-ui-discovery-default-7cc4bb646-bd5dr                2/2     Running   0          22s
+NAME                                          READY   STATUS    RESTARTS   AGE
+cron-79cf8cb8f7-p7dzz                         1/1     Running   0          62m
+mig-controller-default-56f88ff77c-f4w5w       1/1     Running   0          62m
+mysql-0                                       1/1     Running   0          63m
+qiming-operator-1658889927-59569d987b-l76hw   1/1     Running   0          63m
+ui-discovery-default-5c679db89f-vkv8z         2/2     Running   0          62m
+webserver-6f56575f65-97zqt                    1/1     Running   0          62m
 
 # kubectl -n qiming-backend get pods
-NAME                      READY   STATUS    RESTARTS   AGE
-restic-nxb4k              1/1     Running   0          48s
-restic-vtjvf              1/1     Running   0          48s
-velero-58d86bfd96-7qbmf   1/1     Running   0          48s
+NAME                                             READY   STATUS    RESTARTS   AGE
+amberapp-controller-manager-76d8fb4998-5p6qz     1/1     Running   0          37d
+data-mover-controller-manager-6f878565bb-px9nt   1/1     Running   0          54m
+restic-djwcd                                     1/1     Running   0          3d1h
+velero-5586df6449-xgqh4                          1/1     Running   0          3d1h
+velero-installer-cdcfc8fd5-l7gkf                 1/1     Running   0          58m
 
 # helm list -A
 NAME            NAMESPACE               REVISION        UPDATED                                 STATUS          CHART                   APP VERSION 
 ...
-qiming-operator-1658300960      qiming-migration        1               2022-07-20 15:09:21.831979635 +0800 CST deployed        qiming-operator-2.6.3   2.6.3
+qiming-operator-1658889927      qiming-migration        1               2022-07-27 10:45:29.422516501 +0800 CST deployed        qiming-operator-2.7.0   2.7.0
 ```
 
 第四步，安装成功后根据提示获取访问url和token，并登陆YS1000前端
