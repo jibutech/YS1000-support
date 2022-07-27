@@ -6,11 +6,11 @@
     - [1.1 检查集群环境与连接](#11-检查集群环境与连接)
     - [1.2 拷贝文档并上传镜像](#12-拷贝文档并上传镜像)
 - [2. 安装Helm](#2-安装Helm)
-- [3. 创建storageclass](#3-创建storageclass)
-- [4. 部署S3 gateway](#4-部署MinIO)
-    - [4.1 通过helm安装minio](#41-通过helm安装minio)
-    - [4.2 MinIO配置用户和bucket](#42-MinIO配置用户和bucket)
-- [5. 部署YS1000](#5-部署YS1000)
+- [3. 部署S3 gateway](#3-部署MinIO)
+    - [3.1 创建storageclass](#31-创建storageclass) 
+    - [3.2 通过helm安装minio](#32-通过helm安装minio)
+    - [3.3 MinIO配置用户和bucket](#33-MinIO配置用户和bucket)
+- [4. 部署YS1000](#4-部署YS1000)
 
 
 ## 1. 运行环境与文件准备
@@ -131,7 +131,10 @@ version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec637357037
 ```
 
 ## 3. 部署MinIO
-**注意**: 推荐在生产环境中使用外部企业级对象存储服务，如果环境中具备此条件，可以跳过第四步 MinIO 相关配置，基于外置对象服务，创建备份需要的S3 bucket
+
+**注意-1**: 推荐在生产环境中使用外部企业级对象存储服务(S3)作为数据备份目标
+**注意-2**: 基于外部S3服务，请准备好备份需要的S3账号和bucket，跳过此步，执行 [4. 部署YS1000](#4-部署YS1000)
+
 本文中我们将使用已经打包好的helm chart和docker image通过替换minio-values.yaml的参数实现私有化部署。
 
 ### 3.1 创建storageclass
@@ -176,10 +179,10 @@ test-nfs              fuseim.pri/ifs               Delete          Immediate    
 |global.storageClass|managed-nfs-storage|
 |image.registry|swr.cn-east-3.myhuaweicloud.com|
 |image.repository|jibu-dev/minio|
-|image.tag|2021.12.10|
+|image.tag|2021.12.10-debian-10-r0|
 |clientImage.registry|swr.cn-east-3.myhuaweicloud.com|
 |clientImage.repository|jibu-dev/minio-client|
-|clientImage.tag|2021.12.10|
+|clientImage.tag|2021.12.10-debian-10-r1|
 |volumePermissions.image.registry|swr.cn-east-3.myhuaweicloud.com|
 |volumePermissions.image.repository|jibu-dev/bitnami-shell|
 |resources.limits.cpu|100m|
@@ -220,24 +223,38 @@ clientImage:
 第三步，按安装完minio后的实际输出命令（每次输出不同，不能直接复制本文！），继续安装minio-client。
 
 ```
-export ROOT_USER=$(kubectl get secret --namespace minio minio-1639291135 -o jsonpath="{.data.root-user}" | base64 --decode)
-export ROOT_PASSWORD=$(kubectl get secret --namespace minio minio-1639291135 -o jsonpath="{.data.root-password}" | base64 --decode)
-kubectl run --namespace minio minio-1639462625-client \
-     --rm --tty -i --restart='Never' \
-     --env MINIO_SERVER_ROOT_USER=$ROOT_USER \
-     --env MINIO_SERVER_ROOT_PASSWORD=$ROOT_PASSWORD \
-     --env MINIO_SERVER_HOST=minio-1639462625 \
-     --image swr.cn-east-3.myhuaweicloud.com/jibu-dev/minio-client:2021.12.10-debian-10-r1 -- admin info minio
+[root@ys1000-demo2 s3-gateway]# export ROOT_USER=$(kubectl get secret --namespace minio minio -o jsonpath="{.data.root-user}" | base64 --decode)
+[root@ys1000-demo2 s3-gateway]# export ROOT_PASSWORD=$(kubectl get secret --namespace minio minio -o jsonpath="{.data.root-password}" | base64 --decode)
+[root@ys1000-demo2 s3-gateway]# kubectl run --namespace minio minio-client \
+>      --rm --tty -i --restart='Never' \
+>      --env MINIO_SERVER_ROOT_USER=$ROOT_USER \
+>      --env MINIO_SERVER_ROOT_PASSWORD=$ROOT_PASSWORD \
+>      --env MINIO_SERVER_HOST=minio \
+>      --image swr.cn-east-3.myhuaweicloud.com/jibu-dev/minio-client:2021.12.10-debian-10-r1 -- admin info minio
+ 09:12:27.69 
+ 09:12:27.69 Welcome to the Bitnami minio-client container
+ 09:12:27.70 Subscribe to project updates by watching https://github.com/bitnami/bitnami-docker-minio-client
+ 09:12:27.70 Submit issues and feature requests at https://github.com/bitnami/bitnami-docker-minio-client/issues
+ 09:12:27.70 
+ 09:12:27.70 INFO  ==> ** Starting MinIO Client setup **
+minio-client 09:12:27.70 INFO  ==> Adding Minio host to 'mc' configuration...
+Added `minio` successfully.
+ 09:12:27.74 INFO  ==> ** MinIO Client setup finished! **
+
+●  minio:9000
+   Uptime: 16 seconds 
+   Version: 2021-12-10T23:03:39Z
+
+pod "minio-client" deleted
 ```
 
 第四步，上述命令成功完成后，修改minio的service访问方式为nodeport，提供对外S3服务。
 **注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
-# kubectl get pod -n minio
-NAME                                READY   STATUS      RESTARTS   AGE
-minio-1639462625-7bcfb6b999-bblth   1/1     Running     0          9m
-minio-1639462625-client             0/1     Completed   0          3m
+[root@ys1000-demo2 s3-gateway]# kubectl get -n minio pod
+NAME                     READY   STATUS    RESTARTS   AGE
+minio-778c47547c-cns9v   1/1     Running   0          29s
 
 # 修改S3 服务端口9000对应的nodeport访问端口为31900
 # 修改S3 console服务端口9001对应的nodeport访问端口为31901
@@ -311,7 +328,7 @@ image:
   tag: "v2.7.0"
 ...
 imageBase:
-  registry: registry.cn-shanghai.aliyuncs.com/jibudata
+  registry: swr.cn-east-3.myhuaweicloud.com/jibu-dev
   pullPolicy: Always
   tag: "v2.7.0"
 ...
