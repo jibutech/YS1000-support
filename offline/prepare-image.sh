@@ -194,6 +194,8 @@ ys1000Images=(
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-2801dcd 
     ${ys1000Repo}/velero-plugin-ys1000:v0.4.0
     ${ys1000Repo}/mysql:8.0.29-debian-10-r23
+    ${ys1000Repo}/ys1000-offline-installer:v2.7.0
+    ${ys1000Repo}/log-collector:v2.7.0
 )
 
 
