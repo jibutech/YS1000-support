@@ -361,7 +361,7 @@ componentImages:
     repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/self-restore
     tag: "v2.7.0"
   webServer:
-    repository: registry.cn-shanghai.aliyuncs.com/jibudata/webserver
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/webserver
     tag: "v2.7.0"
 ...
 migconfig:
