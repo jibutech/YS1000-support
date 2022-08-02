@@ -137,6 +137,12 @@ version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec637357037
 
 本文中我们将使用已经打包好的helm chart和docker image通过替换minio-values.yaml的参数实现私有化部署。
 
+在测试环境中，可以通过外部NFS server接入K8S集群提供备份对象存储所需要的storage class, 示例
+```
+[root@ys1000-demo2 offline]# cd s3-gateway
+[root@ys1000-demo2 offline]# helm install nfs-subdir-external-provisioner ./nfs-subdir-external-provisioner-4.0.16.tgz --namespace=nfs-storage --create-namespace  -f ./nfs-values.yaml --set nfs.server=<NFS-EXTERANL-IP> --set nfs.path=<NFS-PATH> --set image.repository=jibutech/nfs-subdir-external-provisioner
+```
+
 ### 3.1 创建storageclass
 
 第一步，查看当前环境的storageclass
