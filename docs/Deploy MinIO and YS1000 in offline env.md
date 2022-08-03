@@ -447,7 +447,7 @@ qiming-operator-1658889927      qiming-migration        1               2022-07-
 
 ## 5. 升级YS1000
 
-第一步， 参考[1.2 拷贝应用镜像和文档并上传至私有镜像仓库](#_1.2 拷贝应用镜像和文档并上传至私有镜像仓库) 下载升级的软件包并解压至Linux操作环境YS1000-support-main/offline 目录下， 通过运行脚本prepare-image.sh，导入YS1000升级后的镜像，并修改tag再上传到私有仓库。
+第一步， 参考[1.2 拷贝应用镜像和文档并上传至私有镜像仓库](#12-拷贝应用镜像和文档并上传至私有镜像仓库) 下载升级的软件包并解压至Linux操作环境YS1000-support-main/offline 目录下， 通过运行脚本prepare-image.sh，导入YS1000升级后的镜像，并修改tag再上传到私有仓库。
 
 ```
 [root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.7.2/images.tar.gz
@@ -459,7 +459,7 @@ qiming-operator-1658889927      qiming-migration        1               2022-07-
 
 
 
-第二步， 参考[4. 部署YS1000](#4. 部署YS1000)，进入./ys1000文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
+第二步， 参考[4. 部署YS1000](#4-部署YS1000)，进入./ys1000文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
 
 ```
 [root@ys1000-demo2 s3-gateway]# cd ../ys1000/
