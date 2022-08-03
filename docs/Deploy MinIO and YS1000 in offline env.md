@@ -11,7 +11,7 @@
     - [3.2 通过helm安装minio](#32-通过helm安装minio)
     - [3.3 MinIO配置用户和bucket](#33-MinIO配置用户和bucket)
 - [4. 部署YS1000](#4-部署YS1000)
-- [5. 升级YS000](#5. 升级YS1000)
+- [5. 升级YS1000](#5-升级YS1000)
 
 
 ## 1. 运行环境与文件准备
@@ -445,7 +445,7 @@ qiming-operator-1658889927      qiming-migration        1               2022-07-
   echo $TOKEN
 ```
 
-## 5 升级YS1000
+## 5. 升级YS1000
 
 第一步， 参考[1.2 拷贝应用镜像和文档并上传至私有镜像仓库](#_1.2 拷贝应用镜像和文档并上传至私有镜像仓库) 下载升级的软件包并解压至Linux操作环境YS1000-support-main/offline 目录下， 通过运行脚本prepare-image.sh，导入YS1000升级后的镜像，并修改tag再上传到私有仓库。
 
