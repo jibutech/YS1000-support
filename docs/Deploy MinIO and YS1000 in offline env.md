@@ -11,6 +11,7 @@
     - [3.2 通过helm安装minio](#32-通过helm安装minio)
     - [3.3 MinIO配置用户和bucket](#33-MinIO配置用户和bucket)
 - [4. 部署YS1000](#4-部署YS1000)
+- [5. 升级YS000](#5. 升级YS1000)
 
 
 ## 1. 运行环境与文件准备
@@ -443,3 +444,185 @@ qiming-operator-1658889927      qiming-migration        1               2022-07-
   export TOKEN=$(kubectl -n qiming-migration describe secrets $SECRET |grep token: | awk '{print $2}')
   echo $TOKEN
 ```
+
+## 5 升级YS1000
+
+第一步， 参考[1.2 拷贝应用镜像和文档并上传至私有镜像仓库](#_1.2 拷贝应用镜像和文档并上传至私有镜像仓库) 下载升级的软件包并解压至Linux操作环境YS1000-support-main/offline 目录下， 通过运行脚本prepare-image.sh，导入YS1000升级后的镜像，并修改tag再上传到私有仓库。
+
+```
+[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.7.2/images.tar.gz
+[root@ys1000-demo2 ~]# wget https://ys1000-public.oss-cn-shanghai.aliyuncs.com/v2.7.2/YS1000-support-v2.7.2.zip
+[root@ys1000-demo2 ~]# tar -xvzf images.tar.gz
+[root@ys1000-demo2 ~]# unzip YS1000-support-v2.7.2.zip 
+...
+```
+
+
+
+第二步， 参考[4. 部署YS1000](#4. 部署YS1000)，进入./ys1000文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
+
+```
+[root@ys1000-demo2 s3-gateway]# cd ../ys1000/
+
+# 修改qiming-values.yaml中所有的镜像配置为私有镜像地址
+# cat qiming-values.yaml
+...
+image:
+  repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/qiming-operator
+  pullPolicy: Always
+  tag: "v2.7.2"
+...
+imageBase:
+  registry: swr.cn-east-3.myhuaweicloud.com/jibu-dev
+  pullPolicy: Always
+  tag: "v2.7.2"
+...
+componentImages:
+  uiImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-ui
+    tag: "v2.7.2"
+  discoveryImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-discovery
+    tag: "v2.7.2"
+  migControllerImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/mig-controller
+    tag: "v2.7.2"
+  resticHelperImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-restic-restore-helper
+    tag: "v1.7.0"
+  veleroInstallerImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-installer
+    tag: "v2.7.2"
+  hookRunnerImage:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/hook-runner
+    tag: "latest"
+  cron:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/cron
+    tag: "v2.7.2"
+  helmTool:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/helm-tool
+    tag: "v2.7.2"
+  selfRestore:
+    repository: swr.cn-east-3.myhuaweicloud.com/jibu-dev/self-restore
+    tag: "v2.7.2"
+  webServer:
+    repository: registry.cn-shanghai.aliyuncs.com/jibudata/webserver
+    tag: "v2.7.2"
+...
+migconfig:
+  ...
+  amberappRegistry: "swr.cn-east-3.myhuaweicloud.com"
+  amberappRepo: "jibu-dev/amberapp"
+  amberappTag: "0.0.6"
+  amberappEnabled: true
+  amberappClusters: "all"
+
+  datamoverRegistry: "swr.cn-east-3.myhuaweicloud.com"
+  datamoverRepo: "jibu-dev/data-mover"
+  datamoverTag: "v2.7.2"
+  datamoverEnabled: true
+  datamoverClusters: "all"
+...
+velero:
+  enabled: true
+  namespace: qiming-backend
+  image: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero:v1.7.0-jibu-39a9e6f-202207011049
+plugins: swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-aws:v1.3.0,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-for-csi:v0.2.0-jibu-2801dcd,swr.cn-east-3.myhuaweicloud.com/jibu-dev/velero-plugin-ys1000:v0.4.0
+```
+
+第三步， 手动更新crd
+
+```
+[root@ys1000-demo2 ~]# pwd
+/root/YS1000-support-release-2.7/offline/ys1000
+
+[root@ys1000-demo2 ~]# kubectl apply -f crds.yaml 
+customresourcedefinition.apiextensions.k8s.io/backupjobs.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/backupjobs.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/backupplans.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/backuppolicies.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/backups.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/backuptemplates.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/clusters.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/dataexports.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/dataimports.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/hooks.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/miganalytics.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/migclusters.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/migconfigs.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/mighooks.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/migmigrations.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/migplans.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/migstorages.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/restorejobs.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/restorejobs.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/restoreplans.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/restores.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/storages.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/systemreports.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/systemsettings.migration.yinhestor.com configured
+customresourcedefinition.apiextensions.k8s.io/tenantmanagers.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/tenants.ys.jibudata.com configured
+customresourcedefinition.apiextensions.k8s.io/tenantworkers.ys.jibudata.com configured
+```
+
+
+
+第四步， 升级过程中需再次指定helm安装时set的S3相关参数。可通过以下步骤获取S3的相关参数
+
+```
+#获取helm的release name
+
+[root@ys1000-demo2 s3-gateway]# helm list -n qiming-migration
+NAME                        	NAMESPACE       	REVISION	UPDATED                                	STATUS  	CHART                	APP VERSION
+qiming-operator-2-1659432937	qiming-migration	1       	2022-08-02 17:35:40.109728947 +0800 CST	deployed	qiming-operator-2.7.0	2.7.0
+```
+
+```
+#查看helm 安装时使用的参数， 获取helm 安装时的S3相关参数
+[root@ys1000-demo2 s3-gateway]# helm get values qiming-operator-2-1659432937  -n qiming-migration
+USER-SUPPLIED VALUES:
+affinity: {}
+autoscaling:
+  enabled: false
+  maxReplicas: 1
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 80
+componentImages:
+  ...
+s3Config:   <---------------------
+  accessKey: minio   
+  bucket: test
+  name: minio
+  provider: aws
+  region: default
+  s3Url: http://139.198.27.211:31900
+  secretKey: minio123
+  skipped: false
+securityContext: {}
+selfBackup:
+  enabled: false
+  frequency: 49 */1 * * *
+  retention: 168
+service:
+  name: ui-service
+  port: 9000
+  type: NodePort
+serviceAccount:
+  annotations: {}
+  create: true
+  name: ""
+tolerations: []
+uploadToS3: false
+...
+```
+
+第五步，使用命令 helm upgrade 进行软件升级
+
+**注意-1:** 如果需要在升级过程中修改或者增加部分参数，可以附加参数 --set key=value[,key=value] 来完成
+
+```
+[root@ys1000-demo2 s3-gateway]# helm upgrade ./qiming-operator-2.7.2.tgz --namespace qiming-migration -f qiming-values.yaml --set service.type=NodePort --set s3Config.accessKey=minio --set s3Config.secretKey=minio123 --set s3Config.bucket=test --set s3Config.s3Url=http://139.198.27.211:31900
+```
+
+第六步，查看qiming-operator版本和pod运行情况，等待pod就绪
