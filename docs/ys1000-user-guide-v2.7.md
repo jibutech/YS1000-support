@@ -1,4 +1,4 @@
-# 银数多云数据管家2.6版使用说明书
+# 银数多云数据管家2.7版使用说明书
 
 ## 目录结构
 
@@ -17,19 +17,23 @@
     - [5.2 创建备份任务](#52-创建备份任务)
     - [5.3 执行备份任务](#53-执行备份任务)
     - [5.4 查看备份作业](#54-查看备份作业)
+    - [5.5 取消备份作业](#55-取消备份作业)
 - [6. 恢复至本集群](#6-恢复至本集群)
     - [6.1 创建应用恢复任务](#61-创建应用恢复任务)
     - [6.2 执行应用恢复任务](#62-执行应用恢复任务)
     - [6.3 查看应用恢复作业](#63-查看应用恢复作业)
+    - [6.4 取消应用恢复作业](#64-取消应用恢复作业)
 - [7. 恢复至其它集群](#7-恢复至其它集群)
     - [7.1 创建、执行、查看应用恢复任务](#71-创建、执行、查看应用恢复任务)
     - [7.2 修改相应应用信息](#72-修改相应应用信息)
 - [8. 跨集群迁移](#8-跨集群迁移)
     - [8.1 创建迁移任务](#81-创建迁移任务)
-    - [8.2 执行迁移任务](#82-执行迁移任务)
-    - [8.3 查看迁移作业](#83-查看迁移作业)
-    - [8.4 修改相应应用信息](#84-修改相应应用信息)
-    - [8.5 钩子程序](#85-钩子程序)
+    - [8.2 执行增量迁移任务](#82-执行增量迁移任务)
+    - [8.3 执行一键迁移任务](#83-执行一键迁移任务)
+    - [8.4 查看迁移作业](#84-查看迁移作业)
+    - [8.5 取消迁移作业](#85-取消迁移作业)
+    - [8.6 修改相应应用信息](#86-修改相应应用信息)
+    - [8.7 钩子程序](#87-钩子程序)
 - [9. 配置作业报告](#9-配置作业报告)
 - [10. YS1000的自备份与恢复](#10-YS1000的自备份与恢复)
 - [11. 产品限制](#11-产品限制)
@@ -338,7 +342,7 @@ kubectl create -f deploy/kubernetes/snapshot-controller/
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/backup-create-4-2.6.png)
 
 
-第五步，点击“下一步”选择备份前保护数据库一致性（目前仅支持mysql和mongodb，后续开放postgresql）。
+第五步，点击“下一步”选择备份前保护数据库一致性（目前仅支持mysql和mongodb，后续开放postgresql），并勾选开启保护。
 
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/backup-create-5-2.6.png)
 
@@ -372,9 +376,35 @@ kubectl create -f deploy/kubernetes/snapshot-controller/
 
 备份任务成功后，可点击右侧“恢复”按钮进行恢复。
 
-从YS1000 v2.6.0版本开始，新增任务监控页面，可以查看所有备份、恢复和迁移任务
+从YS1000 v2.6.0版本开始，新增任务监控页面，可以查看所有备份、恢复和迁移任务，并可查看备份资源详情，以及每个资源的yaml文件
 
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/jobmonitor-page-2.6.png)
+
+从YS1000 v2.7.0版本开始，新增任务详情页面，可以查看每个备份、恢复任务的详细情况
+
+详情页面有两个入口
+1.点击备份任务右侧“详情”按钮
+2.点击任务监控中的备份/恢复任务名称
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/backupjob-detail-1-2.7.png)
+
+切换到资源列表
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/backupjob-detail-2-2.7.png)
+
+点击某个资源查看yaml
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/backupjob-detail-3-2.7.png)
+
+### 5.5 取消备份作业
+
+备份任务进行时，可点击右侧“取消”按钮进行取消
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/backupjob-cancel-1-2.7.png)
+
+取消成功后，状态更新
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/backupjob-cancel-2-2.7.png)
 
 ## 6. 恢复至本集群
 
@@ -426,6 +456,24 @@ kubectl create -f deploy/kubernetes/snapshot-controller/
 在应用恢复页面中，点击恢复任务栏的链接，即可查看恢复作业的执行情况，也可以通过任务监控页面浏览概况。
 
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/restore-status-beta.png)
+
+从YS1000 v2.7.0版本开始，新增任务详情页面，可以查看每个备份、恢复任务的详细情况
+
+详情页面有两个入口
+1.点击恢复任务右侧“详情”按钮
+2.点击任务监控中的备份/恢复任务名称
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/restorejob-detail-1-2.7.png)
+
+### 6.4 取消应用恢复作业
+
+恢复任务进行时，可点击右侧“取消”按钮进行取消
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/restorejob-cancel-1-2.7.png)
+
+取消成功后，状态更新
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/restorejob-cancel-2-2.7.png)
 
 ## 7. 恢复至其它集群
 
@@ -481,11 +529,19 @@ kubectl create -f deploy/kubernetes/snapshot-controller/
 
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/migration4-2.5.png)
 
-### 8.2 执行迁移任务
+### 8.2 执行增量迁移任务
 
-在应用迁移页面中，选择对应迁移任务的""列，在操作中选择“一键迁移”，即可触发迁移作业。
+从YS1000 2.7.0版本开始，支持增量迁移，即一个迁移计划创建后，可进行多次增量迁移，最后再进行一次一键迁移完成应用异地拉起
+在应用迁移页面中，选择对应迁移计划的操作列，在操作中选择“增量迁移”，即可触发增量迁移作业。
 
-![](https://gitee.com/jibutech/tech-docs/raw/master/images/start-mig-beta.png)
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/migrationjob-increment-2.7.png)
+
+
+### 8.3 执行一键迁移任务
+
+在应用迁移页面中，选择对应迁移计划的操作列，在操作中选择“一键迁移”，即可触发迁移作业。
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/migrationjob-entire-2.7.png)
 
 迁移过程默认会停掉源集群中选定命名空间内的应用，以保证数据一致性。
 
@@ -495,17 +551,28 @@ kubectl create -f deploy/kubernetes/snapshot-controller/
 
 点击“迁移”按钮，迁移作业即开始运行。
 
-### 8.3 查看迁移作业
+### 8.4 查看迁移作业
 
 在迁移页面中，点击迁移任务栏的链接，即可查看迁移作业的执行情况，也可以通过任务监控页面浏览概况。
 
 ![](https://gitee.com/jibutech/tech-docs/raw/master/images/mig-started-beta.png)
 
-### 8.4 修改相应应用信息
+### 8.5 取消迁移作业
+
+迁移任务进行时，可点击右侧“取消”按钮进行取消
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/migrationjob-cancel-1-2.7.png)
+
+取消成功后，状态更新
+
+![](https://gitee.com/jibutech/tech-docs/raw/master/images/migrationjob-cancel-2-2.7.png)
+
+
+### 8.6 修改相应应用信息
 
 在目标端集群重新启动应用后，对于和源集群有冲突的资源需要进行相应的更改，然后才能在目标端完全恢复应用。如wordpress在目标端重启启动后，仍旧会绑定源端使用的域名，这时需要管理员将域名指向目标端集群IP，或者执行特定脚本来更改新域名。
 
-### 8.5 钩子程序
+### 8.7 钩子程序
 
 钩子程序（Hook) 提供在备份，恢复以及迁移应用执行前后添加应用自定义逻辑的功能，满足不同应用的需求。
 简单的自定义逻辑支持通过ansible playbook 脚本来实现，或者用户也可以根据应用需要开发自定义的钩子程序（容器镜像）。
@@ -612,13 +679,13 @@ https://github.com/jibutech/docs/blob/main/email-configuration.md
 -   第二步，下载安装helmtool，并拷贝到可执行目录：
 
     ```
-    docker cp $(docker create --rm registry.cn-shanghai.aliyuncs.com/jibudata/restore-job:release-2.5.0-latest):/usr/bin/helmtool /tmp/helmtool
+    docker cp $(docker create --rm registry.cn-shanghai.aliyuncs.com/jibudata/restore-job:release-2.7.0-latest):/usr/bin/helmtool /tmp/helmtool
     mv /tmp/helmtool /usr/local/bin/helmtool
     ```
 
 -   第三步，在需要做恢复的集群上下载 
 
-    https://github.com/jibutech/docs/blob/main/self-restore/self-restore-2.6.0.sh
+    https://github.com/jibutech/docs/blob/main/self-restore/self-restore-2.7.0.sh
     
     并按照脚本提示创建config文件，并填入自备份使用的s3信息
     
@@ -639,12 +706,180 @@ https://github.com/jibutech/docs/blob/main/email-configuration.md
 
     `kubectl -n <namespace> annotate pod/<podname> backup.velero.io/backup-volumes-excludes=<volumename>`
 
+-   取消备份、恢复、迁移任务后，不会对已经生成的资源进行回退，需要手动检查环境并删除
+
 
 ## 12. 故障与诊断
 
 ### 12.1 日志收集
 
-请参考 https://github.com/jibutech/docs/tree/main/log_collection#readme 部署日志收集容器镜像，执行日志收集命令后发送给技术支持人员。
+使用Helm安装YS1000的时可以指定YS1000的控制组件所使用的命名空间名字， 默认命令空间名为ys1000， YS1000的备份引擎安装在用户集群名为qiming-backend的命名空间内， 因此需要分别对控制组件和备份引擎进行日志收集。
+
+## 
+
+#### YS1000控制组件日志收集
+
+1. 查询ys1000的serviceaccount， 更新server-log-collector.yaml文件中的serviceAccountName。
+
+```
+# server-log-collector.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-collector
+  namespace: qiming-migration
+  labels:
+    app: log-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-collector
+  template:
+    metadata:
+      labels:
+        app: log-collector
+    spec:
+      serviceAccountName: qiming-operator
+      containers:
+      - name: log-collector
+        image: registry.cn-shanghai.aliyuncs.com/jibudata/log-collector:v2.7.0
+```
+
+```
+[root@gyj-dev ~]# kubectl -n ys1000 get sa
+NAME                         SECRETS   AGE
+default                      1         23d
+qiming-operator-1634274895   1         10s
+
+#  在server-log-collector.yaml搜索serviceAccountName并对应的"qiming-operator"替换为"qiming-operator-1634274895"
+
+[root@gyj-dev ~]# grep serviceAccountName server-log-collector.yaml
+      serviceAccountName: qiming-operator-1634274895
+```
+
+2. 部署 日志收集工具收集日志.
+
+```
+# 在ys1000命名空间内安装日志收集工具
+[root@gyj-dev ~]# kubectl apply -f ./server-log-collector.yaml
+
+# check log collector pod status
+[root@gyj-dev ~]# kubectl -n ys1000 get pods
+NAME                                                READY   STATUS    RESTARTS   AGE
+log-collector-74c865f9-bb8xg                        1/1     Running   0          36m
+cron-85b8fd5767-m2pfd                               1/1     Running   0          7d17h
+mig-controller-default-784f64d4dc-fqrvz             1/1     Running   0          112m
+mysql-0                                             1/1     Running   0          7d17h
+ui-discovery-default-9d4ff6769-xwmjd                2/2     Running   0          5d21h
+webserver-8d9b58776-4ck5b                           1/1     Running   0          5d21h
+
+# 进入collector pod 
+[root@gyj-dev ~]# k -n ys1000 exec -it log-collector-74c865f9-bb8xg -- sh
+
+# 执行日志收集命令
+(app-root) sh-4.4$ python /qiming/log-collector.py
+(app-root) sh-4.4$ python /qiming/log-collector.py
+Create logpath /tmp/qiming-migration-logs-1634224404.41/ys1000
+Create logpath /tmp/qiming-migration-logs-1634224404.41/qiming-backend
+Create log file for pod log-collector-74c865f9-bb8xg
+Create log file for pod mig-controller-default-58ff75688c-g8rlj
+Create log file for pod qiming-operator-94fcbbd57-6wg6c
+Create log file for pod qiming-operator-velero-installer-78ddb79499-d8rbw
+Create log file for pod ui-discovery-default-cdc8774bf-2rvpb
+...
+Collect configmap migration-cluster-config.yaml from namespace qiming-backend
+Compress logs to /tmp/qiming-migration-logs-1634224404.41.tar
+
+(app-root) sh-4.4$ ls -rlt /tmp/qiming-migration-logs-1634223960.63.tar
+-rw-r--r-- 1 default root 15595520 Oct 14 15:06 /tmp/qiming-migration-logs-1634223960.63.tar
+
+# 将打包后的日志拷贝到指定目录
+[root@gyj-dev ~]# k -n ys1000 exec -it log-collector-74c865f9-bb8xg -- sh ^C
+[root@gyj-dev ~]# kubectl cp ys1000/log-collector-74c865f9-bb8xg:/tmp/qiming-migration-logs-1634224404.41.tar /tmp/qiming-migration-logs-1634224404.41.tar
+...
+[root@gyj-dev ~]# ls -rlt /tmp/qiming-migration-logs-1634224404.41.tar
+-rw-r--r-- 1 root root 15626240 10月 14 23:14 /tmp/qiming-migration-logs-1634224404.41.tar
+```
+
+## 
+
+#### YS1000备份引擎日志收集
+
+1. 下载文件client-log-collector.yaml
+
+```
+# client-log-collector.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-collector
+  namespace: qiming-backend
+  labels:
+    app: log-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-collector
+  template:
+    metadata:
+      labels:
+        app: log-collector
+    spec:
+      serviceAccountName: velero
+      containers:
+      - name: log-collector
+        image: registry.cn-shanghai.aliyuncs.com/jibudata/log-collector:v2.7.0
+```
+
+2. 部署日志收集工具并收集日志
+
+```
+# 安装日志收集工具
+[root@gyj-dev ~]# kubectl apply -f ./client-log-collector.yaml
+
+# 查看对应pod状态
+[root@gyj-dev ~]#  kubectl -n qiming-backend get pods
+NAME                                             READY   STATUS    RESTARTS   AGE
+log-collector-76766456cc-hxnw5                   1/1     Running   0          35m
+minio-7496b65c8-zxmqr                            1/1     Running   0          11h
+amberapp-controller-manager-76d8fb4998-d8ndx     1/1     Running   0          12m
+data-mover-controller-manager-5f6765fc9d-qmxwq   1/1     Running   0          12m
+restic-hn5nw                                     1/1     Running   0          12m
+velero-5586df6449-2w2nw                          1/1     Running   0          12m
+velero-installer-76f989f69b-xzfm8                1/1     Running   0          13m
+
+# 进入collector pod 
+[root@gyj-dev ~]# k -n qiming-backend exec -it log-collector-76766456cc-hxnw5 -- sh
+
+# 执行日志收集命令
+(app-root) sh-4.4$ python /qiming/log-collector.py
+Create logpath /tmp/qiming-migration-logs-1634223920.81/ys1000
+Create logpath /tmp/qiming-migration-logs-1634223920.81/qiming-backend
+Create log file for pod log-collector-74c865f9-bb8xg
+Create log file for pod mig-controller-default-58ff75688c-g8rlj
+Create log file for pod qiming-operator-94fcbbd57-6wg6c
+Create log file for pod qiming-operator-velero-installer-78ddb79499-d8rbw
+Create log file for pod ui-discovery-default-cdc8774bf-2rvpb
+Create log file for pod log-collector-76766456cc-hxnw5
+Create log file for pod minio-7496b65c8-zxmqr
+...
+Collect configmap migration-cluster-config.yaml from namespace ys1000
+Collect configmap ui-configmap.yaml from namespace ys1000
+Create logpath /tmp/qiming-migration-logs-1634223960.63/qiming-backend/configmap
+Collect configmap migration-cluster-config.yaml from namespace qiming-backend
+Compress logs to /tmp/qiming-migration-logs-1634223960.63.tar
+
+(app-root) sh-4.4$ ls -rlt /tmp/qiming-migration-logs-1634223960.63.tar
+-rw-r--r-- 1 default root 15595520 Oct 14 15:06 /tmp/qiming-migration-logs-1634223960.63.tar
+
+# 将打包后的日志拷贝到指定目录
+[root@gyj-dev ~]# kubectl cp qiming-backend/log-collector-76766456cc-hxnw5:/tmp/qiming-migration-logs-1634223960.63.tar /tmp/qiming-migration-logs-1634223960.63.tar
+...
+[root@gyj-dev ~]# ls -rlth /tmp/qiming-migration-logs-1634223960.63.tar
+-rw-r--r-- 1 root root 15M 10月 14 23:11 /tmp/qiming-migration-logs-1634223960.63.tar
+```
 
 ### 12.2 常见问题
 
