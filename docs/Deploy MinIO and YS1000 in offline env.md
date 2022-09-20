@@ -1,17 +1,16 @@
-# Deploy S3 gateway and YS1000 in offline environment
+# t pulDeploy S3 gateway and YS1000 in offline environment
 
 ## 内容索引
 
 - [1. 运行环境与文件准备](#1-运行环境与文件准备)
-    - [1.1 检查集群环境与连接](#11-检查集群环境与连接)
-    - [1.2 拷贝文档并上传镜像](#12-拷贝文档并上传镜像)
+  - [1.1 检查集群环境与连接](#11-检查集群环境与连接)
+  - [1.2 拷贝文档并上传镜像](#12-拷贝文档并上传镜像)
 - [2. 安装Helm](#2-安装Helm)
 - [3. 部署S3 gateway](#3-部署MinIO)
-    - [3.1 创建storageclass](#31-创建storageclass) 
-    - [3.2 通过helm安装minio](#32-通过helm安装minio)
-    - [3.3 MinIO配置用户和bucket](#33-MinIO配置用户和bucket)
+  - [3.1 创建storageclass](#31-创建storageclass)
+  - [3.2 通过helm安装minio](#32-通过helm安装minio)
+  - [3.3 MinIO配置用户和bucket](#33-MinIO配置用户和bucket)
 - [4. 部署YS1000](#4-部署YS1000)
-
 
 ## 1. 运行环境与文件准备
 
@@ -21,11 +20,11 @@
 
 检查以下环境准备, 使用 `swr.cn-east-3.myhuaweicloud.com` 作为私有镜像仓库示例
 
-|Requirment|Example|
-|:--|:--|
-|k8s|>= v1.15 <= v1.21|
-|docker| >= v19.03.8|
-|swr.cn-east-3.myhuaweicloud.com|私有镜像地址|
+| Requirment                      | Example           |
+| :------------------------------ | :---------------- |
+| k8s                             | >= v1.15 <= v1.21 |
+| docker                          | >= v19.03.8       |
+| swr.cn-east-3.myhuaweicloud.com | 私有镜像地址      |
 
 ```
 [root@ys1000-demo2 ~]# kubectl get nodes
@@ -138,6 +137,7 @@ version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec637357037
 本文中我们将使用已经打包好的helm chart和docker image通过替换minio-values.yaml的参数实现私有化部署。
 
 在测试环境中，可以通过外部NFS server接入K8S集群提供备份对象存储所需要的storage class, 示例
+
 ```
 [root@ys1000-demo2 offline]# cd s3-gateway
 [root@ys1000-demo2 offline]# helm install nfs-subdir-external-provisioner ./nfs-subdir-external-provisioner-4.0.16.tgz --namespace=nfs-storage --create-namespace  -f ./nfs-values.yaml --set nfs.server=<NFS-EXTERANL-IP> --set nfs.path=<NFS-PATH> --set image.repository=jibutech/nfs-subdir-external-provisioner
@@ -154,7 +154,7 @@ rook-ceph-block   rook-ceph.rbd.csi.ceph.com   Delete          Immediate        
 test-nfs          fuseim.pri/ifs               Delete          Immediate           false                  2m54s
 ```
 
-第二步，选择目标storageclass (以test-nfs为例)，复制一份test-nfs的yaml文件，修改name和reclaimPolicy并生成一个为备份S3 gateway使用的storageclass 
+第二步，选择目标storageclass (以test-nfs为例)，复制一份test-nfs的yaml文件，修改name和reclaimPolicy并生成一个为备份S3 gateway使用的storageclass
 
 ```
 # kubectl get storageclass test-nfs -o yaml > jibu-backup-sc.yaml
@@ -177,25 +177,27 @@ managed-nfs-storage   fuseim.pri/ifs               Retain          Immediate    
 rook-ceph-block       rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   66d
 test-nfs              fuseim.pri/ifs               Delete          Immediate           false                  29m
 ```
+
 ### 3.2 通过helm安装minio
 
 第一步，修改minio-value.yaml 中的值，替换成上一步新建的storageclass和私有镜像仓库的地址，其他参数如resources等根据需求替换（此处为默认值）。
-|Key|Value|
-|:--|:--|
-|global.storageClass|managed-nfs-storage|
-|image.registry|swr.cn-east-3.myhuaweicloud.com|
-|image.repository|jibu-dev/minio|
-|image.tag|2021.12.10-debian-10-r0|
-|clientImage.registry|swr.cn-east-3.myhuaweicloud.com|
-|clientImage.repository|jibu-dev/minio-client|
-|clientImage.tag|2021.12.10-debian-10-r1|
-|volumePermissions.image.registry|swr.cn-east-3.myhuaweicloud.com|
-|volumePermissions.image.repository|jibu-dev/bitnami-shell|
-|resources.limits.cpu|100m|
-|resources.limits.memory|64Mi|
-|persistence.storageClass|managed-nfs-storage|
-|persistence.accessModes|ReadWriteOnce|
-|persistence.size|8Gi|
+
+| Key                                | Value                           |
+| :--------------------------------- | :------------------------------ |
+| global.storageClass                | managed-nfs-storage             |
+| image.registry                     | swr.cn-east-3.myhuaweicloud.com |
+| image.repository                   | jibu-dev/minio                  |
+| image.tag                          | 2021.12.10-debian-10-r0         |
+| clientImage.registry               | swr.cn-east-3.myhuaweicloud.com |
+| clientImage.repository             | jibu-dev/minio-client           |
+| clientImage.tag                    | 2021.12.10-debian-10-r1         |
+| volumePermissions.image.registry   | swr.cn-east-3.myhuaweicloud.com |
+| volumePermissions.image.repository | jibu-dev/bitnami-shell          |
+| resources.limits.cpu               | 100m                            |
+| resources.limits.memory            | 64Mi                            |
+| persistence.storageClass           | managed-nfs-storage             |
+| persistence.accessModes            | ReadWriteOnce                   |
+| persistence.size                   | 8Gi                             |
 
 **注意**: `persistence.size` 需要根据用户应用数据总量，每日增量以及业务备份频率和过期时间来综合考虑，上述容量仅为示例
 
@@ -255,7 +257,7 @@ pod "minio-client" deleted
 ```
 
 第四步，上述命令成功完成后，修改minio的service访问方式为nodeport，提供对外S3服务。
-**注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
+**注意**: 本文档以 `NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
 [root@ys1000-demo2 s3-gateway]# kubectl get -n minio pod
@@ -297,12 +299,14 @@ minio   NodePort   10.98.207.210   <none>        9000:31900/TCP,9001:31901/TCP  
 ### 3.3 MinIO配置用户和bucket
 
 第一步，使用上述命令环境变量中的的用户名和密码 `echo $ROOT_USER; echo $ROOT_PASSWORD`，前端登陆minio。
+
 ```
 [root@ys1000-demo2 ~]# echo $ROOT_USER
 bbIfNCYsAy
 [root@ys1000-demo2 ~]# echo $ROOT_PASSWORD
 A1SwRaOBM23NwGbK10IByfpS8SrF4XEgjQUyfD65
 ```
+
 第二步，浏览器打开
 
 http:// < cluster node ip > :31901/login
@@ -317,10 +321,9 @@ secret key：minio123
 
 第四步，点击左侧导航栏Buckets，创建一个bucket， 此处以bucket `test` 为例。
 
-
 ## 4. 部署YS1000
 
-第一步，进入`./ys1000`文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
+第一步，进入 `./ys1000`文件夹，修改qiming-value.yaml中的容器镜像地址替换成私有镜像仓库的repositry。
 
 ```
 [root@ys1000-demo2 s3-gateway]# cd ../ys1000/
@@ -393,7 +396,7 @@ velero:
 ```
 
 第二步，使用helm本地安装YS1000。
-**注意**: 本文档以`NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
+**注意**: 本文档以 `NodePort`为例, 其他配置例如 `ingress` 可根据平台对应信息进行设置
 
 ```
 # S3 参数示例
