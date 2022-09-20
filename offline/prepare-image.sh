@@ -173,7 +173,7 @@ function exportImages {
 
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibudata
 
-originTag=v2.8.0
+originTag=v2.8.2
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
     ${ys1000Repo}/mig-ui:${originTag}
