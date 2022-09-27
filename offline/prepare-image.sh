@@ -173,7 +173,7 @@ function exportImages {
 
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibudata
 
-originTag=v2.8.2
+originTag=v2.8.3
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
     ${ys1000Repo}/mig-ui:${originTag}
@@ -191,7 +191,7 @@ ys1000Images=(
     ${ys1000Repo}/webserver:${originTag}
     ${ys1000Repo}/dm-agent:${originTag}
     ${ys1000Repo}/restic-dm:${originTag}
-    ${ys1000Repo}/velero:v1.7.0-jibu-39a9e6f-202207011049
+    ${ys1000Repo}/velero:v1.7.0-jibu-5598caa-202209221818
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-2801dcd 
     ${ys1000Repo}/velero-plugin:${originTag}
