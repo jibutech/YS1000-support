@@ -2,11 +2,11 @@
 TAG ?= $(shell git rev-parse --abbrev-ref HEAD).$(shell git rev-parse --short HEAD)
 
 # Image URL to use all building/pushing image targets
-IMG ?= registry.cn-shanghai.aliyuncs.com/jibudata/ys1000-offline-installer:$(TAG)
+IMG ?= registry.cn-shanghai.aliyuncs.com/jibudata/ys1000-offline-installer
 
 
 build:
-	docker build -f ./Dockerfile -t ${IMG} .
+	docker build -f ./Dockerfile -t ${IMG}:${TAG} .
 
 push:
-	docker push ${IMG}
+	docker push ${IMG}:${TAG}
