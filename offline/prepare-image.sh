@@ -171,33 +171,37 @@ function exportImages {
     pushImages "${array[@]}"
 }
 
-ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibudata
+ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibutech
 
-originTag=v2.8.4
+originTag=v2.9.0
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
+    ${ys1000Repo}/webserver:${originTag}
+    ${ys1000Repo}/hookrunner:${originTag}
+    ${ys1000Repo}/agent-operator:${originTag}
     ${ys1000Repo}/mig-ui:${originTag}
     ${ys1000Repo}/mig-discovery:${originTag}
     ${ys1000Repo}/mig-controller:${originTag}
-    ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
-    ${ys1000Repo}/velero-installer:${originTag}
-    ${ys1000Repo}/hook-runner:latest
-    ${ys1000Repo}/hookrunner:${originTag}
     ${ys1000Repo}/cron:${originTag}
     ${ys1000Repo}/helm-tool:${originTag}
     ${ys1000Repo}/self-restore:${originTag}
-    ${ys1000Repo}/amberapp:0.0.6
     ${ys1000Repo}/data-mover:${originTag}
-    ${ys1000Repo}/webserver:${originTag}
     ${ys1000Repo}/dm-agent:${originTag}
     ${ys1000Repo}/restic-dm:${originTag}
-    ${ys1000Repo}/velero:v1.7.0-jibu-2ecbe58-202210101417
-    ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
-    ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-2801dcd 
+    ${ys1000Repo}/stub:${originTag}
     ${ys1000Repo}/velero-plugin:${originTag}
-    ${ys1000Repo}/mysql:8.0.29-debian-10-r23
     ${ys1000Repo}/ys1000-offline-installer:${originTag}
     ${ys1000Repo}/log-collector:v2.7.0
+    ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
+    ${ys1000Repo}/hook-runner:latest
+    ${ys1000Repo}/amberapp:0.0.6
+    ${ys1000Repo}/velero:v1.7.0-jibu-fcabaacb-202210161435
+    ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
+    ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-b1c547a-202209050731 
+    ${ys1000Repo}/mysql:8.0.29-debian-10-r23
+    ${ys1000Repo}/apiserver:v0.5.1
+    ${ys1000Repo}/clustersynchro-manager:v0.5.1
+    ${ys1000Repo}/controller-manager:v0.5.1
 )
 
 
