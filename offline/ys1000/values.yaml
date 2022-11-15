@@ -13,6 +13,7 @@ featureGates:
   DataMover: true
   AmberApp: true
   Stub: true
+  Archive: false
 
 restore: false
 uploadToS3: false
@@ -23,9 +24,9 @@ selfBackup:
   retention: 168
 
 imageBase:
-  registry: docker.io
+  registry: registry.cn-shanghai.aliyuncs.com
   pullPolicy: Always
-  tag: "v2.9.0"
+  tag: "release-2.10.1-latest"
 
 image:
   registry:
@@ -53,7 +54,7 @@ components:
     image:
       registry:
       repository: jibutech/velero
-      tag: v1.7.0-jibu-fcabaacb-202210161435
+      tag: v1.7.0-jibu-dev-529eb463-20221109131403
     imageResticHelper:
       registry:
       repository: jibutech/velero-restic-restore-helper
@@ -61,7 +62,7 @@ components:
     plugins:
     - jibutech/velero-plugin-for-aws:v1.3.0
     - jibutech/velero-plugin-for-csi:v0.2.0-jibu-b1c547a-202209050731
-    - jibutech/velero-plugin:v2.9.0
+    - jibutech/velero-plugin:release-2.10.1-latest
     resticPodMemRequest: 1Gi
     resticPodMemLimit: 8Gi
     resticPodCPURequest: 500m
@@ -72,6 +73,11 @@ components:
     image:
       registry:
       repository: jibutech/data-mover
+      tag:
+  dataVerify:
+    image:
+      registry:
+      repository: jibutech/data-verify
       tag:
   amberApp:
     image:
@@ -132,7 +138,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 migconfig:
-  version: "2.9.0"
+  version: "2.10.1"
   clientName: "default"
   deploymentMode: "standalone"
   isAdminCluster: false
@@ -225,7 +231,7 @@ affinity: {}
 mysql:
   fullnameOverride: mysql
   image:
-    registry: docker.io
+    registry: registry.cn-shanghai.aliyuncs.com
     repository: jibutech/mysql
     tag: 8.0.29-debian-10-r23
     pullPolicy: IfNotPresent
@@ -240,6 +246,15 @@ mysql:
       enabled: false
       size: 20Gi
       storageClass: ""
+    startupProbe:
+      timeoutSeconds: 60
+      initialDelaySeconds: 60
+    readinessProbe:
+      initialDelaySeconds: 60
+      timeoutSeconds: 60
+    livenessProbe:
+      initialDelaySeconds: 60
+      timeoutSeconds: 60
 
 clusterpedia:
   persistenceMatchNode: None
@@ -251,13 +266,13 @@ clusterpedia:
 
   apiserver:
     image:
-      registry: docker.io
+      registry: registry.cn-shanghai.aliyuncs.com
       repository: jibutech/apiserver
       tag: v0.5.1
 
   clustersynchroManager:
     image:
-      registry: docker.io
+      registry: registry.cn-shanghai.aliyuncs.com
       repository: jibutech/clustersynchro-manager
       tag: v0.5.1
     featureGates:
@@ -275,7 +290,7 @@ clusterpedia:
   ## controller manager config
   controllerManager:
     image:
-      registry: docker.io
+      registry: registry.cn-shanghai.aliyuncs.com
       repository: jibutech/controller-manager
       tag: v0.5.1
 
@@ -294,7 +309,7 @@ clusterpedia:
   mysql:
     enabled: false
     image:
-      registry: docker.io
+      registry: registry.cn-shanghai.aliyuncs.com
       repository: jibutech/mysql
       tag: 8.0.29-debian-10-r23
     auth:
@@ -306,4 +321,15 @@ clusterpedia:
       persistence:
         enabled: false
         size: 20Gi
+
+alarm:
+  enabled: false
+  wechat:
+    enabled: false
+    corpID: ""
+    agentID: ""
+    toUser: ""
+    apiSecret: ""
+  webhook:
+    enabled: false
 
