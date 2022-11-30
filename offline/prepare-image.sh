@@ -173,20 +173,20 @@ function exportImages {
 
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibutech
 
-originTag=release-2.10.1-latest
+originTag=2.10.1
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
     ${ys1000Repo}/webserver:${originTag}
     ${ys1000Repo}/hookrunner:${originTag}
     ${ys1000Repo}/agent-operator:${originTag}
-    ${ys1000Repo}/velero:v1.7.0-jibu-dev-529eb463-20221109131403
+    ${ys1000Repo}/velero:v1.7.0-jibu-dev-146eb2ff-20221122233612
     ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
     ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-b1c547a-202209050731
     ${ys1000Repo}/velero-plugin:${originTag}
     ${ys1000Repo}/data-mover:${originTag}
     ${ys1000Repo}/data-verify:${originTag}
-    ${ys1000Repo}/amberapp:0.0.7
+    ${ys1000Repo}/amberapp:0.0.8
     ${ys1000Repo}/dm-agent:${originTag}
     ${ys1000Repo}/restic-dm:${originTag}
     ${ys1000Repo}/mig-ui:${originTag}
@@ -202,6 +202,7 @@ ys1000Images=(
     ${ys1000Repo}/apiserver:v0.6.0-alpha.0
     ${ys1000Repo}/clustersynchro-manager:v0.6.0-alpha.0
     ${ys1000Repo}/controller-manager:v0.6.0-alpha.0
+    ${ys1000Repo}/ys1000-offline-installer:${originTag}
 )
 
 
