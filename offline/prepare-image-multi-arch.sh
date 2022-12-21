@@ -78,19 +78,6 @@ function uploadImages {
   echo "all images are uploaded successfully"
 }
 
-function downloadImages {
-    for image in "$@"
-    do
-        docker pull $image
-        if [ $? -ne 0 ];then
-            echo "failed to docker pull $image "
-            exit 1
-        else
-            echo "docker pull $image done!"
-        fi
-    done
-}
-
 function downloadImageFiles {
     if [ ! -d ./images ];then
         mkdir -p ./images
@@ -118,44 +105,9 @@ function downloadImageFiles {
     echo "all images are downloaded successfully"
 }
 
-function retagImages {
-    for image in "$@"
-    do
-        newImage=$(getNewImages ${image})
-        docker tag $image $newImage
-        if [ $? -ne 0 ];then
-            echo "failed to docker tag $image to $newImage"
-            exit 1
-        else
-            echo "docker tag $image to $newImage done!"
-        fi
-    done
-}
-
-function pushImages {
-    for image in "$@"
-    do
-        newImage=$(getNewImages ${image})
-        docker push $newImage
-        if [ $? -ne 0 ];then
-            echo "failed to docker push $newImage"
-            exit 1
-        else
-            echo "docker push $newImage done!"
-        fi
-    done
-}
-
-function exportImages {
-    array=("$@")
-    downloadImages "${array[@]}"
-    retagImages "${array[@]}"
-    pushImages "${array[@]}"
-}
-
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibutech
 
-originTag=2.10.1
+originTag=2.10.2
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
     ${ys1000Repo}/webserver:${originTag}
@@ -164,7 +116,7 @@ ys1000Images=(
     ${ys1000Repo}/velero:v1.7.0-jibu-dev-146eb2ff-20221122233612
     ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
     ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
-    ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-b1c547a-202209050731
+    ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-b99d08e-20221122124825
     ${ys1000Repo}/velero-plugin:${originTag}
     ${ys1000Repo}/data-mover:${originTag}
     ${ys1000Repo}/data-verify:${originTag}
@@ -179,8 +131,7 @@ ys1000Images=(
     ${ys1000Repo}/hook-runner:latest
     ${ys1000Repo}/helm-tool:${originTag}
     ${ys1000Repo}/self-restore:${originTag}
-    ${ys1000Repo}/log-collector:v2.7.0
-    ${ys1000Repo}/mysql:8.0.29-debian-10-r23
+    ${ys1000Repo}/mysql:8.0.29
     ${ys1000Repo}/apiserver:v0.6.0-alpha.0
     ${ys1000Repo}/clustersynchro-manager:v0.6.0-alpha.0
     ${ys1000Repo}/controller-manager:v0.6.0-alpha.0
@@ -189,9 +140,11 @@ ys1000Images=(
 
 
 s3gatewayImages=(
+    registry.cn-shanghai.aliyuncs.com/ys1000/nfs-subdir-external-provisioner:v4.0.2
     registry.cn-shanghai.aliyuncs.com/ys1000/bitnami-shell:10-debian-10-r275 
     registry.cn-shanghai.aliyuncs.com/ys1000/minio-client:2021.12.10-debian-10-r1 
-    registry.cn-shanghai.aliyuncs.com/ys1000/minio:2021.12.10-debian-10-r0)
+    registry.cn-shanghai.aliyuncs.com/ys1000/minio:2021.12.10-debian-10-r0
+)
 
 ingressImages=(registry.cn-shanghai.aliyuncs.com/ys1000/ingress-nginx-controller:v0.40.2 registry.cn-shanghai.aliyuncs.com/ys1000/kube-webhook-certgen:v1.3.0)
 
@@ -226,17 +179,4 @@ elif [ "$method" == "-u" ];then
 else
   echo "not support"
   exit 1
-  #if [ "$imageType" == "all" ] || [ "$imageType" == "ys1000" ];then
-  #  exportImages "${ys1000Images[@]}"
-  #  exportImages "${s3gatewayImages[@]}"
-  #  exportImages "${ingressImages[@]}"
-  #fi
-
-  #if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
-  #  exportImages "${wordpressImages[@]}"
-  #  exportImages "${cronjobImages[@]}"
-  #  exportImages "${daemonsetImages[@]}"
-  #  exportImages "${kafkaImages[@]}"
-  #  exportImages "${nginxImages[@]}"
-  #fi
 fi
