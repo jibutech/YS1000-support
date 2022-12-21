@@ -2,7 +2,7 @@ replicaCount: 1
 strategyType: Recreate
 
 image:
-  repository: jibutech/nfs-subdir-external-provisioner
+  repository: registry.cn-shanghai.aliyuncs.com/jibutech/nfs-subdir-external-provisioner
   tag: v4.0.2
   pullPolicy: IfNotPresent
 imagePullSecrets: []

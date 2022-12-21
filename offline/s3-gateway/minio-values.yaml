@@ -14,7 +14,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  storageClass: ""
+  storageClass: "nfs-client"
 
 ## @section Common parameters
 
@@ -52,9 +52,9 @@ extraDeploy: []
 ## @param image.debug Specify if debug logs should be enabled
 ##
 image:
-  registry: docker.io
-  repository: bitnami/minio
-  tag: 2021.12.10-debian-10-r0
+  registry: registry.cn-shanghai.aliyuncs.com
+  repository: jibutech/minio
+  tag: 2021.12.10-debian-11-r0
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -78,9 +78,9 @@ image:
 ## @param clientImage.tag MinIO&reg; Client image tag (immutable tags are recommended)
 ##
 clientImage:
-  registry: docker.io
-  repository: bitnami/minio-client
-  tag: 2021.12.10-debian-10-r1
+  registry: registry.cn-shanghai.aliyuncs.com
+  repository: jibutech/minio-client
+  tag: 2021.12.10-debian-11-r0
 ## @param mode MinIO&reg; server mode (`standalone` or `distributed`)
 ## ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
 ##
@@ -774,14 +774,14 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: "managed-nfs-storage"
+  storageClass: "nfs-client"
   ## @param persistence.mountPath Data volume mount path
   ##
   mountPath: /data
   ## @param persistence.accessModes PVC Access Modes for MinIO&reg; data volume
   ##
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   ## @param persistence.size PVC Storage Request for MinIO&reg; data volume
   ##
   size: 8Gi
@@ -808,9 +808,9 @@ volumePermissions:
   ## @param volumePermissions.image.pullSecrets Specify docker-registry secret names as an array
   ##
   image:
-    registry: docker.io
-    repository: bitnami/bitnami-shell
-    tag: 10-debian-10-r275
+    registry: registry.cn-shanghai.aliyuncs.com
+    repository: jibutech/bitnami-shell
+    tag: 2022.12.21-debian-11
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
