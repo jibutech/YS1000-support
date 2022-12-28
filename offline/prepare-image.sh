@@ -61,21 +61,48 @@ function uploadImages {
 
   for file in $images
   do
-      newImage=${REPOSITRY_ID}/$file
-      echo "import $newImage "
-
-      regctl image import $newImage ./images/$file
+      output=$(docker load -i ./images/$file)
       if [ $? -ne 0 ];then
-          echo "failed to regctl image import $newImage"
+        echo "failed to docker load -i $image "
+        exit 1
+      fi
+      image=$(echo $output | awk '{print $3}')
+      if [ "$image" == "" ];then
+        echo "failed to get image from $output"
+        exit 1
+      fi
+
+      newImage=$(getNewImages ${image})
+      docker tag $image $newImage
+      if [ $? -ne 0 ];then
+          echo "failed to docker tag $image to $newImage"
           exit 1
       else
-          echo "regctl image import $newImage done!"
+          echo "docker tag $image to $newImage done!"
+      fi
+
+      docker push $newImage
+      if [ $? -ne 0 ];then
+          echo "failed to docker push $newImage"
+          exit 1
+      else
+          echo "docker push $newImage done!"
       fi
 
   done
-  
-  echo "--------"
-  echo "all images are uploaded successfully"
+}
+
+function downloadImages {
+    for image in "$@"
+    do
+        docker pull $image
+        if [ $? -ne 0 ];then
+            echo "failed to docker pull $image "
+            exit 1
+        else
+            echo "docker pull $image done!"
+        fi
+    done
 }
 
 function downloadImageFiles {
@@ -89,25 +116,64 @@ function downloadImageFiles {
 
     for image in "$@"
     do
-        echo "start to export $image "
-
-        imageName=$(echo $image | cut -d/ -f3)
-        regctl image export $image > ./images/$imageName
+        echo $image
+        docker pull $image
         if [ $? -ne 0 ];then
-            echo "failed to regctl image export $image "
+            echo "failed to docker pull $image "
             exit 1
         else
-            echo "regctl image export $image done!"
+            echo "docker pull $image done!"
+        fi
+
+        imageName=$(echo $image | cut -d/ -f3)
+        docker save $image -o ./images/$imageName
+        if [ $? -ne 0 ];then
+            echo "failed to docker save $image "
+            exit 1
+        else
+            echo "docker save $image done!"
         fi
     done
+}
 
-    echo "--------"
-    echo "all images are downloaded successfully"
+function retagImages {
+    for image in "$@"
+    do
+        newImage=$(getNewImages ${image})
+        docker tag $image $newImage
+        if [ $? -ne 0 ];then
+            echo "failed to docker tag $image to $newImage"
+            exit 1
+        else
+            echo "docker tag $image to $newImage done!"
+        fi
+    done
+}
+
+function pushImages {
+    for image in "$@"
+    do
+        newImage=$(getNewImages ${image})
+        docker push $newImage
+        if [ $? -ne 0 ];then
+            echo "failed to docker push $newImage"
+            exit 1
+        else
+            echo "docker push $newImage done!"
+        fi
+    done
+}
+
+function exportImages {
+    array=("$@")
+    downloadImages "${array[@]}"
+    retagImages "${array[@]}"
+    pushImages "${array[@]}"
 }
 
 ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibutech
 
-originTag=2.10.2
+originTag=2.10.3
 ys1000Images=(
     ${ys1000Repo}/qiming-operator:${originTag}
     ${ys1000Repo}/webserver:${originTag}
@@ -135,7 +201,6 @@ ys1000Images=(
     ${ys1000Repo}/apiserver:v0.6.0-alpha.0
     ${ys1000Repo}/clustersynchro-manager:v0.6.0-alpha.0
     ${ys1000Repo}/controller-manager:v0.6.0-alpha.0
-    ${ys1000Repo}/ys1000-offline-installer:${originTag}
 )
 
 
@@ -163,7 +228,7 @@ if [ "$method" == "-d" ];then
   if [ "$imageType" == "all" ] || [ "$imageType" == "ys1000" ];then
     downloadImageFiles "${ys1000Images[@]}"
     downloadImageFiles "${s3gatewayImages[@]}"
-    downloadImageFiles "${ingressImages[@]}"
+    #downloadImageFiles "${ingressImages[@]}"
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
@@ -177,6 +242,17 @@ if [ "$method" == "-d" ];then
 elif [ "$method" == "-u" ];then
   uploadImages
 else
-  echo "not support"
-  exit 1
+  if [ "$imageType" == "all" ] || [ "$imageType" == "ys1000" ];then
+    exportImages "${ys1000Images[@]}"
+    exportImages "${s3gatewayImages[@]}"
+    exportImages "${ingressImages[@]}"
+  fi
+
+  if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
+    exportImages "${wordpressImages[@]}"
+    exportImages "${cronjobImages[@]}"
+    exportImages "${daemonsetImages[@]}"
+    exportImages "${kafkaImages[@]}"
+    exportImages "${nginxImages[@]}"
+  fi
 fi
