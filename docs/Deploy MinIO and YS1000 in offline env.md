@@ -227,6 +227,7 @@ clientImage:
 ```
 [root@ys1000-demo2 s3-gateway]#  helm install minio ./helm-chart-minio-9.2.5.tar.gz --namespace minio --create-namespace -f minio-values.yaml
 ```
+上述命令安装成功后，创建负载均衡或者使用NodePort，将minio的S3服务端口以及管理端口分别暴露出来。比如将S3服务端口9000 配置对外端口为31900；S3管理端口9001 配置对外端口为31901。
 
 第三步，按安装完minio后的实际输出命令（每次输出不同，不能直接复制本文！），继续安装minio-client。
 
