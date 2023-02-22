@@ -1,8 +1,11 @@
 #!/bin/sh
 
+set -e
+set -o pipefail
+
 if [ $# -ne 2 ];then
   echo "invalid paramters"
-  echo "$0 <-d|-u|-e> <ys1000|app|all>"
+  echo "$0 <-d|-u|-e> <ys1000|app|s3tool|all>"
   echo "  first param:"
   echo "    -d: download images to local ./images only"
   echo "    -u: update images to new repo configured byenv variable: ${REPOSITRY_ID} "
@@ -36,9 +39,11 @@ if [ "$imageType" == "ys1000" ];then
   echo "image type: ys1000 only"
 elif [ "$imageType" == "app" ];then
   echo "image type: app only"
+elif [ "$imageType" == "s3tools" ];then
+  echo "image type: s3tools only"
 else
   imageType="all"
-  echo "image type: all for both ys1000 and app"
+  echo "image type: all for ys1000, s3tools and app samples"
 fi
 
 function getNewImages {
@@ -171,64 +176,27 @@ function exportImages {
     pushImages "${array[@]}"
 }
 
-ys1000Repo=registry.cn-shanghai.aliyuncs.com/jibutech
+script_dir=$(dirname $( dirname -- "$0"; ))
+if [ ! -d "$script_dir" ];then
+  echo "can't find script dir, abort..."
+  exit 1
+fi
 
-originTag=2.10.3
-ys1000Images=(
-    ${ys1000Repo}/qiming-operator:${originTag}
-    ${ys1000Repo}/webserver:${originTag}
-    ${ys1000Repo}/hookrunner:${originTag}
-    ${ys1000Repo}/agent-operator:${originTag}
-    ${ys1000Repo}/velero:v1.7.0-jibu-dev-146eb2ff-20221122233612
-    ${ys1000Repo}/velero-restic-restore-helper:v1.7.0
-    ${ys1000Repo}/velero-plugin-for-aws:v1.3.0
-    ${ys1000Repo}/velero-plugin-for-csi:v0.2.0-jibu-b99d08e-20221122124825
-    ${ys1000Repo}/velero-plugin:${originTag}
-    ${ys1000Repo}/data-mover:${originTag}
-    ${ys1000Repo}/data-verify:${originTag}
-    ${ys1000Repo}/amberapp:0.0.8
-    ${ys1000Repo}/dm-agent:${originTag}
-    ${ys1000Repo}/restic-dm:${originTag}
-    ${ys1000Repo}/mig-ui:${originTag}
-    ${ys1000Repo}/mig-discovery:${originTag}
-    ${ys1000Repo}/mig-controller:${originTag}
-    ${ys1000Repo}/cron:${originTag}
-    ${ys1000Repo}/stub:${originTag}
-    ${ys1000Repo}/hook-runner:latest
-    ${ys1000Repo}/helm-tool:${originTag}
-    ${ys1000Repo}/self-restore:${originTag}
-    ${ys1000Repo}/mysql:8.0.29
-    ${ys1000Repo}/apiserver:v0.6.0-alpha.0
-    ${ys1000Repo}/clustersynchro-manager:v0.6.0-alpha.0
-    ${ys1000Repo}/controller-manager:v0.6.0-alpha.0
-)
+image_conf="$script_dir/images.config"
+if [ ! -f "$image_conf" ];then
+  echo "can't find image config file, abort..."
+  exit 1
+fi
 
-
-s3gatewayImages=(
-    registry.cn-shanghai.aliyuncs.com/jibutech/nfs-subdir-external-provisioner:v4.0.2
-    registry.cn-shanghai.aliyuncs.com/jibutech/bitnami-shell:2022.12.21-debian-11
-    registry.cn-shanghai.aliyuncs.com/jibutech/minio-client:2021.12.10-debian-11-r0
-    registry.cn-shanghai.aliyuncs.com/jibutech/minio:2021.12.10-debian-11-r0
-)
-
-ingressImages=(registry.cn-shanghai.aliyuncs.com/ys1000/ingress-nginx-controller:v0.40.2 registry.cn-shanghai.aliyuncs.com/ys1000/kube-webhook-certgen:v1.3.0)
-
-wordpressImages=(registry.cn-shanghai.aliyuncs.com/ys1000/mysql:5.6 registry.cn-shanghai.aliyuncs.com/ys1000/wordpress:4.8-apache registry.cn-shanghai.aliyuncs.com/ys1000/busybox:latest)
-
-cronjobImages=(registry.cn-shanghai.aliyuncs.com/ys1000/busybox:latest)
-
-daemonsetImages=(registry.cn-shanghai.aliyuncs.com/ys1000/fluentd:v2.5.2)
-
-
-kafkaImages=(registry.cn-shanghai.aliyuncs.com/ys1000/kafka:2.8.1-debian-10-r57 registry.cn-shanghai.aliyuncs.com/ys1000/kubectl:1.19.16-debian-10-r25 registry.cn-shanghai.aliyuncs.com/ys1000/bitnami-shell:10-debian-10-r260 registry.cn-shanghai.aliyuncs.com/ys1000/kafka-exporter:1.4.2-debian-10-r67 registry.cn-shanghai.aliyuncs.com/ys1000/jmx-exporter:0.16.1-debian-10-r129 registry.cn-shanghai.aliyuncs.com/ys1000/zookeeper:3.7.0-debian-10-r188)
-
-nginxImages=(registry.cn-shanghai.aliyuncs.com/ys1000/nginx:latest registry.cn-shanghai.aliyuncs.com/ys1000/debian:latest)
+source $image_conf
 
 if [ "$method" == "-d" ];then
   if [ "$imageType" == "all" ] || [ "$imageType" == "ys1000" ];then
     downloadImageFiles "${ys1000Images[@]}"
+  fi
+
+  if [ "$imageType" == "all" ] || [ "$imageType" == "s3tools" ];then
     downloadImageFiles "${s3gatewayImages[@]}"
-    #downloadImageFiles "${ingressImages[@]}"
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
@@ -244,8 +212,10 @@ elif [ "$method" == "-u" ];then
 else
   if [ "$imageType" == "all" ] || [ "$imageType" == "ys1000" ];then
     exportImages "${ys1000Images[@]}"
+  fi
+
+  if [ "$imageType" == "all" ] || [ "$imageType" == "s3tools" ];then
     exportImages "${s3gatewayImages[@]}"
-    exportImages "${ingressImages[@]}"
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
