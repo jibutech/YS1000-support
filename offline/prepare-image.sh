@@ -206,13 +206,7 @@ if [ "$method" == "-d" ];then
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
-    downloadImageFiles "${wordpressImages[@]}"
-    downloadImageFiles "${cronjobImages[@]}"
-    downloadImageFiles "${daemonsetImages[@]}"
-    downloadImageFiles "${kafkaImages[@]}"
-    downloadImageFiles "${nginxImages[@]}"
-    downloadImageFiles "${mongoImages[@]}"
-    downloadImageFiles "${postgresqlImages[@]}"
+    downloadImageFiles "${appImages[@]}"
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "harbor" ];then
@@ -231,10 +225,10 @@ else
   fi
 
   if [ "$imageType" == "all" ] || [ "$imageType" == "app" ];then
-    exportImages "${wordpressImages[@]}"
-    exportImages "${cronjobImages[@]}"
-    exportImages "${daemonsetImages[@]}"
-    exportImages "${kafkaImages[@]}"
-    exportImages "${nginxImages[@]}"
+    exportImages "${appImages[@]}"
+  fi
+
+  if [ "$imageType" == "all" ] || [ "$imageType" == "harbor" ];then
+    downloadImageFiles "${harborImages[@]}"
   fi
 fi
