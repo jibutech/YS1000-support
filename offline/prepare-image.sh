@@ -12,7 +12,9 @@ if [ $# -ne 2 ];then
   echo "    -e: do both download and then upload to new repo configured byenv variable: ${REPOSITRY_ID} "
   echo "  second param:"
   echo "    ys1000: only ys1000 images"
-  echo "    app: only test applications"
+  echo "    app: only sample applications"
+  echo "    s3tools: s3 related images"
+  echo "    harbor: harbor installation images"
   echo "    all: both ys1000 and test apps"
   exit 1
 fi
