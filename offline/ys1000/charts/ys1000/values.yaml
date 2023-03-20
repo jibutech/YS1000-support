@@ -20,7 +20,7 @@ featureGates:
 imageBase:
   registry: registry.cn-shanghai.aliyuncs.com
   pullPolicy: Always
-  tag: "release-3.1.1-latest"
+  tag: "release-3.2.0-latest"
 
 image:
   registry:
@@ -80,7 +80,7 @@ components:
     image:
       registry:
       repository: jibutech/amberapp
-      tag: 0.1.0
+      tag: 0.1.1
   dmAgent:
     image:
       registry:
@@ -122,13 +122,23 @@ components:
       registry:
       repository: jibutech/etcd-stub
       tag:
+  volSync:
+    image:
+      registry:
+      repository: jibutech/volsync
+      tag: 0.6.1
+  drInitContainer:
+    image:
+      registry:
+      repository: jibutech/dr-initcontainer
+      tag:
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
 migconfig:
-  version: "3.1.1"
+  version: "3.2.0"
   clientName: "default"
   deploymentMode: "standalone"
   isAdminCluster: false
@@ -301,6 +311,10 @@ clusterpedia:
 
   mysql:
     enabled: false
+    image:
+      registry: registry.cn-shanghai.aliyuncs.com
+      repository: jibutech/mysql
+      tag: 8.0.32
 
 alarm:
   enabled: false
