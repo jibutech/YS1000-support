@@ -5715,6 +5715,9 @@ spec:
               actions:
                 description: RestoreActions defines the action for a restore
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -6299,6 +6302,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -7727,6 +7735,9 @@ spec:
                 additionalProperties:
                   description: RestoreActions defines the action for a restore
                   properties:
+                    cronJobSuspend:
+                      description: cronjob suspend
+                      type: boolean
                     existingResourcePolicy:
                       description: 'ExistingResourcePolicy: none or update none is
                         default behavior while update is to overwrite any existing
@@ -8317,6 +8328,11 @@ spec:
                       description: PreserveNodePorts specifies whether to restore
                         old nodePorts from backup.
                       type: boolean
+                    pvcNameMappings:
+                      additionalProperties:
+                        type: string
+                      description: pvc name mapping, change restore pvc name
+                      type: object
                     replicaAction:
                       description: set replica for a specified workload with filter
                       items:
@@ -8948,6 +8964,9 @@ spec:
               restoreActions:
                 description: Deprecated
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -9532,6 +9551,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -12612,6 +12636,28 @@ spec:
                     x-kubernetes-int-or-string: true
                   etcdBackupEnabled:
                     type: boolean
+                  nfs:
+                    description: Represents an NFS mount that lasts the lifetime of
+                      a pod. NFS volumes do not support ownership management or SELinux
+                      relabeling.
+                    properties:
+                      path:
+                        description: 'Path that is exported by the NFS server. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                      readOnly:
+                        description: 'ReadOnly here will force the NFS export to be
+                          mounted with read-only permissions. Defaults to false. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: boolean
+                      server:
+                        description: 'Server is the hostname or IP address of the
+                          NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                    required:
+                    - path
+                    - server
+                    type: object
                   storageClassName:
                     type: string
                 type: object
@@ -13301,6 +13347,28 @@ spec:
                       tag:
                         type: string
                     type: object
+                  nfs:
+                    description: Represents an NFS mount that lasts the lifetime of
+                      a pod. NFS volumes do not support ownership management or SELinux
+                      relabeling.
+                    properties:
+                      path:
+                        description: 'Path that is exported by the NFS server. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                      readOnly:
+                        description: 'ReadOnly here will force the NFS export to be
+                          mounted with read-only permissions. Defaults to false. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: boolean
+                      server:
+                        description: 'Server is the hostname or IP address of the
+                          NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                    required:
+                    - path
+                    - server
+                    type: object
                   storageClass:
                     type: string
                 type: object
@@ -13790,6 +13858,9 @@ spec:
               actions:
                 description: RestoreActions defines the action for a restore
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -14374,6 +14445,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -15222,6 +15298,9 @@ spec:
               actions:
                 description: RestoreActions defines the action for a restore
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -15806,6 +15885,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -17389,6 +17473,9 @@ spec:
               actions:
                 description: Deprecated
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -17973,6 +18060,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -18531,6 +18623,9 @@ spec:
                   actions:
                     description: RestoreActions defines the action for a restore
                     properties:
+                      cronJobSuspend:
+                        description: cronjob suspend
+                        type: boolean
                       existingResourcePolicy:
                         description: 'ExistingResourcePolicy: none or update none
                           is default behavior while update is to overwrite any existing
@@ -19127,6 +19222,11 @@ spec:
                         description: PreserveNodePorts specifies whether to restore
                           old nodePorts from backup.
                         type: boolean
+                      pvcNameMappings:
+                        additionalProperties:
+                          type: string
+                        description: pvc name mapping, change restore pvc name
+                        type: object
                       replicaAction:
                         description: set replica for a specified workload with filter
                         items:
@@ -22904,6 +23004,9 @@ spec:
               actions:
                 description: RestoreActions defines the action for a restore
                 properties:
+                  cronJobSuspend:
+                    description: cronjob suspend
+                    type: boolean
                   existingResourcePolicy:
                     description: 'ExistingResourcePolicy: none or update none is default
                       behavior while update is to overwrite any existing resource
@@ -23488,6 +23591,11 @@ spec:
                     description: PreserveNodePorts specifies whether to restore old
                       nodePorts from backup.
                     type: boolean
+                  pvcNameMappings:
+                    additionalProperties:
+                      type: string
+                    description: pvc name mapping, change restore pvc name
+                    type: object
                   replicaAction:
                     description: set replica for a specified workload with filter
                     items:
@@ -27691,6 +27799,28 @@ spec:
                         type: string
                       tag:
                         type: string
+                    type: object
+                  nfs:
+                    description: Represents an NFS mount that lasts the lifetime of
+                      a pod. NFS volumes do not support ownership management or SELinux
+                      relabeling.
+                    properties:
+                      path:
+                        description: 'Path that is exported by the NFS server. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                      readOnly:
+                        description: 'ReadOnly here will force the NFS export to be
+                          mounted with read-only permissions. Defaults to false. More
+                          info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: boolean
+                      server:
+                        description: 'Server is the hostname or IP address of the
+                          NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
+                        type: string
+                    required:
+                    - path
+                    - server
                     type: object
                   storageClass:
                     type: string
