@@ -31,42 +31,42 @@ imageBase:
 
 image:
   registry:
-  repository: jibutech/qiming-operator
+  repository: ys1000/qiming-operator
   tag:
 
 components:
   webserver:
     image:
       registry:
-      repository: jibutech/webserver
+      repository: ys1000/webserver
       tag:
     serviceType: ClusterIP
   hookrunner:
     image:
       registry:
-      repository: jibutech/hookrunner
+      repository: ys1000/hookrunner
       tag:
   operator:
     image:
       registry:
-      repository: jibutech/agent-operator
+      repository: ys1000/agent-operator
       tag:
   velero:
     image:
       registry:
-      repository: jibutech/velero
+      repository: ys1000/velero
       tag: v1.7.0-jibu-dev-2f846640-20230413072023
     imageResticHelper:
       registry:
-      repository: jibutech/velero-restic-restore-helper
+      repository: ys1000/velero-restic-restore-helper
       tag: v1.7.0
     imageInternalPlugin:
       registry:
-      repository: jibutech/velero-plugin
+      repository: ys1000/velero-plugin
       tag:
     plugins:
-    - jibutech/velero-plugin-for-aws:v1.3.0
-    - jibutech/velero-plugin-for-csi:v0.2.0-jibu-b99d08e-20221122124825
+    - ys1000/velero-plugin-for-aws:v1.3.0
+    - ys1000/velero-plugin-for-csi:v0.2.0-jibu-b99d08e-20221122124825
     resticPodMemRequest: 1Gi
     resticPodMemLimit: 8Gi
     resticPodCPURequest: 500m
@@ -76,74 +76,74 @@ components:
   dataMover:
     image:
       registry:
-      repository: jibutech/data-mover
+      repository: ys1000/data-mover
       tag:
   dataVerify:
     image:
       registry:
-      repository: jibutech/data-verify
+      repository: ys1000/data-verify
       tag:
   amberApp:
     image:
       registry:
-      repository: jibutech/amberapp
+      repository: ys1000/amberapp
       tag: 0.1.2
   dmAgent:
     image:
       registry:
-      repository: jibutech/dm-agent
+      repository: ys1000/dm-agent
       tag:
   resticDM:
     image:
       registry:
-      repository: jibutech/restic-dm
+      repository: ys1000/restic-dm
       tag:
   portal:
     image:
       registry:
-      repository: jibutech/mig-ui
+      repository: ys1000/mig-ui
       tag:
     serviceType: NodePort
   discovery:
     image:
       registry:
-      repository: jibutech/mig-discovery
+      repository: ys1000/mig-discovery
       tag: 3.2.0
   controller:
     image:
       registry:
-      repository: jibutech/mig-controller
+      repository: ys1000/mig-controller
       tag:
   cron:
     image:
       registry:
-      repository: jibutech/cron
+      repository: ys1000/cron
       tag:
   agentStub:
     image:
       registry:
-      repository: jibutech/stub
+      repository: ys1000/stub
       tag:
   etcdStub:
     image:
       registry:
-      repository: jibutech/etcd-stub
+      repository: ys1000/etcd-stub
       tag:
   volSync:
     image:
       registry:
-      repository: jibutech/volsync
+      repository: ys1000/volsync
       tag: 0.6.1
   drInitContainer:
     image:
       registry:
-      repository: jibutech/dr-initcontainer
+      repository: ys1000/dr-initcontainer
       tag: 0.1.0
       pullPolicy: IfNotPresent
   helmHook:
     image:
       registry:
-      repository: jibutech/helm-hook
+      repository: ys1000/helm-hook
       tag:
 
 imagePullSecrets: []
@@ -224,7 +224,7 @@ mysql:
   fullnameOverride: mysql
   image:
     registry: registry.cn-shanghai.aliyuncs.com
-    repository: jibutech/mysql
+    repository: ys1000/mysql
     tag: 8.0.32
     pullPolicy: IfNotPresent
   auth:
@@ -260,7 +260,7 @@ clusterpedia:
   apiserver:
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: jibutech/apiserver
+      repository: ys1000/apiserver
       tag: v0.6.2
     resources:
       requests:
@@ -273,7 +273,7 @@ clusterpedia:
   clustersynchroManager:
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: jibutech/clustersynchro-manager
+      repository: ys1000/clustersynchro-manager
       tag: v0.6.2
     resources:
       requests:
@@ -300,7 +300,7 @@ clusterpedia:
     replicaCount: 0
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: jibutech/controller-manager
+      repository: ys1000/controller-manager
       tag: v0.6.2
     resources:
       requests:
@@ -313,7 +313,7 @@ clusterpedia:
   hookJob:
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: jibutech/cloudshell
+      repository: ys1000/cloudshell
       tag: v0.4.0
       pullPolicy: IfNotPresent
 
@@ -333,12 +333,12 @@ clusterpedia:
     enabled: false
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: jibutech/mysql
+      repository: ys1000/mysql
       tag: 8.0.32
 
 dex:
   image:
-    repository: registry.cn-shanghai.aliyuncs.com/jibutech/dex
+    repository: registry.cn-shanghai.aliyuncs.com/ys1000/dex
     tag: 1.0.0
     pullPolicy: Always
   service:
