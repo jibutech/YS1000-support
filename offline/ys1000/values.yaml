@@ -102,7 +102,7 @@ components:
     image:
       registry:
       repository: ys1000/mig-ui
-      tag:
+      tag: ks-3.3.0.6277009
     serviceType: NodePort
   discovery:
     image:
