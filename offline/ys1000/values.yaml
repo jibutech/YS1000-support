@@ -19,7 +19,6 @@ featureGates:
   EtcdStub: false
   CSIAddon: false
   VolSync: false
-  Migration: false
   Auth: true
   Tenant: false
 
@@ -27,46 +26,59 @@ featureGates:
 imageBase:
   registry: registry.cn-shanghai.aliyuncs.com
   pullPolicy: Always
-  tag: "3.3.0"
+  tag: "3.4.0"
 
 image:
-  registry:
-  repository: ys1000/qiming-operator
-  tag:
+  registry: ""
+  repository: jibutech/qiming-operator
+  tag: ""
 
 components:
-  webserver:
+  webServer:
     image:
-      registry:
-      repository: ys1000/webserver
-      tag:
+      registry: ""
+      repository: jibutech/webserver
+      tag: ""
     serviceType: ClusterIP
-  hookrunner:
+  #    database:
+  #      username:
+  #        value: root
+  #      password:
+  #        valueFrom:
+  #          secretKeyRef:
+  #            key: mysql-root-password
+  #            name: mysql
+  #            optional: true
+  #      host: mysql
+  hookRunner:
     image:
-      registry:
-      repository: ys1000/hookrunner
-      tag:
+      registry: ""
+      repository: jibutech/hookrunner
+      tag: ""
   operator:
     image:
-      registry:
-      repository: ys1000/agent-operator
-      tag:
+      registry: ""
+      repository: jibutech/agent-operator
+      tag: ""
+  #    template:
+  #      spec:
+  #        tolerations: []
   velero:
     image:
-      registry:
-      repository: ys1000/velero
-      tag: v1.7.0-jibu-dev-2f846640-20230413072023
+      registry: ""
+      repository: jibutech/velero
+      tag: v1.7.0-jibu-dev-b9c96674-20230525022532
     imageResticHelper:
-      registry:
-      repository: ys1000/velero-restic-restore-helper
+      registry: ""
+      repository: jibutech/velero-restic-restore-helper
       tag: v1.7.0
     imageInternalPlugin:
-      registry:
-      repository: ys1000/velero-plugin
-      tag:
+      registry: ""
+      repository: jibutech/velero-plugin
+      tag: ""
     plugins:
-    - ys1000/velero-plugin-for-aws:v1.3.0
-    - ys1000/velero-plugin-for-csi:v0.2.0-jibu-b99d08e-20221122124825
+      - jibutech/velero-plugin-for-aws:v1.3.0
+      - jibutech/velero-plugin-for-csi:v0.2.0-jibu-4739b10-20230518030507
     resticPodMemRequest: 1Gi
     resticPodMemLimit: 8Gi
     resticPodCPURequest: 500m
@@ -75,76 +87,89 @@ components:
     snapshotDisabled: false
   dataMover:
     image:
-      registry:
-      repository: ys1000/data-mover
-      tag:
+      registry: ""
+      repository: jibutech/data-mover
+      tag: ""
   dataVerify:
     image:
-      registry:
-      repository: ys1000/data-verify
-      tag:
+      registry: ""
+      repository: jibutech/data-verify
+      tag: ""
   amberApp:
     image:
-      registry:
-      repository: ys1000/amberapp
-      tag: 0.1.2
+      registry: ""
+      repository: jibutech/amberapp
+      tag: ""
   dmAgent:
     image:
-      registry:
-      repository: ys1000/dm-agent
-      tag:
+      registry: ""
+      repository: jibutech/dm-agent
+      tag: ""
   resticDM:
     image:
-      registry:
-      repository: ys1000/restic-dm
-      tag:
+      registry: ""
+      repository: jibutech/restic-dm
+      tag: ""
   portal:
     image:
-      registry:
-      repository: ys1000/mig-ui
-      tag:
+      registry: ""
+      repository: jibutech/mig-ui
+      tag: ""
     serviceType: NodePort
   discovery:
     image:
-      registry:
-      repository: ys1000/mig-discovery
+      registry: ""
+      repository: jibutech/mig-discovery
       tag: 3.2.0
   controller:
     image:
-      registry:
-      repository: ys1000/mig-controller
-      tag:
+      registry: ""
+      repository: jibutech/mig-controller
+      tag: ""
   cron:
     image:
-      registry:
-      repository: ys1000/cron
-      tag:
-  agentStub:
+      registry: ""
+      repository: jibutech/cron
+      tag: ""
+  stub:
     image:
-      registry:
-      repository: ys1000/stub
-      tag:
+      registry: ""
+      repository: jibutech/stub
+      tag: ""
   etcdStub:
     image:
-      registry:
-      repository: ys1000/etcd-stub
-      tag:
+      registry: ""
+      repository: jibutech/etcd-stub
+      tag: ""
   volSync:
     image:
-      registry:
-      repository: ys1000/volsync
+      registry: ""
+      repository: jibutech/volsync
       tag: 0.6.1
   drInitContainer:
     image:
-      registry:
-      repository: ys1000/dr-initcontainer
+      registry: ""
+      repository: jibutech/dr-initcontainer
+      tag: 0.2.0
+      pullPolicy: IfNotPresent
+  imagePuller:
+    image:
+      registry: ""
+      repository: jibutech/imagepuller
       tag: 0.1.0
       pullPolicy: IfNotPresent
+  appHookWorker:
+    image:
+      registry: ""
+      repository: jibutech/apphook-worker
+      tag: ""
+
+tools:
   helmHook:
     image:
-      registry:
-      repository: ys1000/helm-hook
-      tag:
+      registry: ""
+      repository: jibutech/helm-hook
+      tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
@@ -156,9 +181,12 @@ migconfig:
   isAdminCluster: false
   agentNamespace: qiming-backend
   selfBackupIntervalSeconds: 300
+  #  template:
+  #    spec:
+  #      tolerations: []
   deletionPolicy:
     removeResources: false
-    staleClusters:
+    #    staleClusters: []
     cancelRunningJobs: false
     force: false
 
@@ -177,7 +205,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
   # capabilities:
@@ -185,13 +213,13 @@ securityContext: {}
   #   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+# runAsUser: 1000
 
 ingress:
   enabled: false
   annotations: {}
     # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/tls-acme: "true"
   # hostname is default host for the ingress resource
   hostname: ys1000.local
   # path is sub-url for ys1000, default is "/"
@@ -222,9 +250,10 @@ affinity: {}
 
 mysql:
   fullnameOverride: mysql
+  tolerations: []
   image:
     registry: registry.cn-shanghai.aliyuncs.com
-    repository: ys1000/mysql
+    repository: jibutech/mysql
     tag: 8.0.32
     pullPolicy: IfNotPresent
   auth:
@@ -232,7 +261,7 @@ mysql:
     database: webserver
   primary:
     args:
-    - --binlog-expire-logs-seconds=3600
+      - --binlog-expire-logs-seconds=3600
     resources:
       limits:
         cpu: 1000m
@@ -258,9 +287,10 @@ clusterpedia:
   #  imageRegistry: ""
 
   apiserver:
+    tolerations: []
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: ys1000/apiserver
+      repository: jibutech/apiserver
       tag: v0.6.2
     resources:
       requests:
@@ -271,9 +301,10 @@ clusterpedia:
         memory: 1Gi
 
   clustersynchroManager:
+    tolerations: []
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: ys1000/clustersynchro-manager
+      repository: jibutech/clustersynchro-manager
       tag: v0.6.2
     resources:
       requests:
@@ -296,11 +327,12 @@ clusterpedia:
 
   ## controller manager config
   controllerManager:
+    tolerations: []
     # disable controller manager
     replicaCount: 0
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: ys1000/controller-manager
+      repository: jibutech/controller-manager
       tag: v0.6.2
     resources:
       requests:
@@ -313,7 +345,7 @@ clusterpedia:
   hookJob:
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: ys1000/cloudshell
+      repository: jibutech/cloudshell
       tag: v0.4.0
       pullPolicy: IfNotPresent
 
@@ -333,12 +365,13 @@ clusterpedia:
     enabled: false
     image:
       registry: registry.cn-shanghai.aliyuncs.com
-      repository: ys1000/mysql
+      repository: jibutech/mysql
       tag: 8.0.32
 
 dex:
+  tolerations: []
   image:
-    repository: registry.cn-shanghai.aliyuncs.com/ys1000/dex
+    repository: registry.cn-shanghai.aliyuncs.com/jibutech/dex
     tag: 1.0.0
     pullPolicy: Always
   service:
@@ -358,19 +391,19 @@ dex:
     web:
       http: 0.0.0.0:5556
     staticClients:
-    - id: ys1000
-      redirectURIs:
-      - 'http://0.0.0.0:30180/login'
-      - 'http://127.0.0.1:5555/callback'
-      name: 'YS1000'
-      secret: ZXmhbABsRS1tcHItcnVjlmVa12u
+      - id: ys1000
+        redirectURIs:
+          - 'http://0.0.0.0:30180/login'
+          - 'http://127.0.0.1:5555/callback'
+        name: 'YS1000'
+        secret: ZXmhbABsRS1tcHItcnVjlmVa12u
     enablePasswordDB: true
     staticPasswords:
-    - email: "admin@example.com"
-      # bcrypt hash of the string "password": $(echo password | htpasswd -BinC 10 admin | cut -d: -f2)
-      hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
-      username: "admin"
-      userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+      - email: "admin@example.com"
+        # bcrypt hash of the string "password": $(echo password | htpasswd -BinC 10 admin | cut -d: -f2)
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+        username: "admin"
+        userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
     connectors:
 #    - type: mockCallback
 #      id: mock
