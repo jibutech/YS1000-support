@@ -98,6 +98,13 @@ function downloadImageFiles {
         echo "start to export $image "
 
         imageName=$(echo $image | cut -d/ -f3)
+
+        regctl image manifest --platform linux/arm64 $image
+        if [ $? -ne 0 ];then
+          echo "failed to get linux/arm64 bundle, exit..."
+          exit 1
+        fi
+
         regctl image export $image > ./images/$imageName
         if [ $? -ne 0 ];then
             echo "failed to regctl image export $image "
