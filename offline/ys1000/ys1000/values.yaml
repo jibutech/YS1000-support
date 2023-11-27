@@ -7,6 +7,9 @@ tags:
   clusterpedia: true
   dex: false
 
+createOrUpdateMigConfig: true
+applyCRDsBeforeUpgrade: true
+
 featureGates:
   AmberApp: true
   Stub: true
@@ -22,7 +25,7 @@ featureGates:
 imageBase:
   registry: registry.cn-shanghai.aliyuncs.com
   pullPolicy: Always
-  tag: "3.5.3"
+  tag: "3.6.0"
 
 image:
   registry: ""
@@ -130,7 +133,7 @@ components:
     image:
       registry: ""
       repository: jibutech/velero
-      tag: v1.7.0-jibu-dev-fa5d3cf5-20230911115735
+      tag: v1.7.0-jibu-dev-030c52ac-20230925080210
     imageResticHelper:
       registry: ""
       repository: jibutech/velero-restic-restore-helper
@@ -141,7 +144,7 @@ components:
       tag: ""
     plugins:
     - jibutech/velero-plugin-for-aws:v1.3.0
-    - jibutech/velero-plugin-for-csi:v0.2.0-jibu-3843028-20230908062220
+    - jibutech/velero-plugin-for-csi:v0.2.1-jibu-a45cd50-20230925035752
     resticPodMemRequest: 1Gi
     resticPodMemLimit: 8Gi
     resticPodCPURequest: 500m
@@ -478,19 +481,14 @@ clusterpedia:
       tag: 8.0.32
 
 dex:
+  fullnameOverride: ys1000-dex
   tolerations: []
   image:
     repository: registry.cn-shanghai.aliyuncs.com/jibutech/dex
     tag: 1.0.0
     pullPolicy: Always
-  service:
-    type: NodePort
-    ports:
-      http:
-        port: 5556
-        nodePort: 32000
   config:
-    issuer: http://0.0.0.0:32000/dex
+    issuer: http://0.0.0.0:30180/dex
     oauth2:
       skipApprovalScreen: true
     storage:
